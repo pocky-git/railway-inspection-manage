@@ -31,10 +31,6 @@ const AdminLayout = observer(({ children }) => {
   // 用户菜单配置
   const userMenuItems = [
     {
-      key: "profile",
-      label: "个人信息",
-    },
-    {
       key: "logout",
       label: (
         <span onClick={handleLogout}>
@@ -96,11 +92,16 @@ const AdminLayout = observer(({ children }) => {
             </Dropdown>
           </div>
         </Header>
-        <Content
-          className={styles["admin-content"]}
-          style={{ background: colorBgContainer, borderRadius: borderRadiusLG }}
-        >
-          {children}
+        <Content className={styles["admin-content"]}>
+          <div
+            style={{
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+            className={styles["content-wrapper"]}
+          >
+            {children}
+          </div>
         </Content>
       </Layout>
     </Layout>

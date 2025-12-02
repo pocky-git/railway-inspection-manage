@@ -1,20 +1,39 @@
 import { lazy } from "react";
-import { DashboardOutlined, DatabaseOutlined } from "@ant-design/icons";
+import {
+  DatabaseOutlined,
+  EditOutlined,
+  OpenAIOutlined,
+  BugOutlined,
+} from "@ant-design/icons";
 
-const DataManage = lazy(() => import("../pages/DataManage"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
+const ProjectManage = lazy(() => import("../pages/ProjectManage"));
+const DiseaseMark = lazy(() => import("../pages/DiseaseMark"));
+const ModelTraining = lazy(() => import("../pages/ModelTraining"));
+const DefectAnalysis = lazy(() => import("../pages/DefectAnalysis"));
 
 export const routes = [
   {
     path: "/data-manage",
-    element: <DataManage />,
+    element: <ProjectManage />,
     icon: <DatabaseOutlined />,
-    label: "数据管理",
+    label: "项目管理",
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />,
-    icon: <DashboardOutlined />,
-    label: "数据概览",
+    path: "/disease-mark",
+    element: <DiseaseMark />,
+    icon: <EditOutlined />,
+    label: "病害标注",
+  },
+  {
+    path: "/model-training",
+    element: <ModelTraining />,
+    icon: <OpenAIOutlined />,
+    label: "模型训练",
+  },
+  {
+    path: "/defect-analysis",
+    element: <DefectAnalysis />,
+    icon: <BugOutlined />,
+    label: "缺陷（病害）分析",
   },
 ];
