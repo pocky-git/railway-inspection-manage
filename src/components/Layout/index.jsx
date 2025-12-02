@@ -17,6 +17,9 @@ const { Header, Sider, Content } = Layout;
 const AdminLayout = observer(({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const pageName = routes.find(
+    (item) => item.path === location.pathname
+  )?.label;
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -70,17 +73,19 @@ const AdminLayout = observer(({ children }) => {
           className={styles["admin-header"]}
           style={{ background: colorBgContainer }}
         >
-          <Button
-            style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
-            }}
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-          />
-
+          <div className={styles["header-left"]}>
+            <Button
+              style={{
+                fontSize: "16px",
+                width: 64,
+                height: 64,
+              }}
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+            />
+            <div className={styles["page-name"]}>{pageName}</div>
+          </div>
           <div className={styles["header-right"]}>
             <Dropdown menu={{ items: userMenuItems }}>
               <div className={styles["user-info"]}>
