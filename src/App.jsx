@@ -5,6 +5,7 @@ import { userStore } from "./store";
 import { routes } from "./config/routes";
 
 // 懒加载页面组件
+const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"));
 const Main = lazy(() => import("./pages/Main"));
 
@@ -18,19 +19,22 @@ const App = observer(() => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
+        <Route path="/404" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
         <Route
+          path="/"
           element={
             <PrivateRoute>
               <Main />
             </PrivateRoute>
           }
         >
+          <Route path="/" element={<Navigate to={routes[0]?.path} replace />} />
           {routes.map((item) => (
             <Route key={item.path} path={item.path} element={item.element} />
           ))}
         </Route>
-        <Route path="*" element={<Navigate to={routes[0].path} replace />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </Suspense>
   );
