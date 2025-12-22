@@ -1,4 +1,6 @@
 import { makeAutoObservable } from "mobx";
+import { login, getCurrentUser } from "../service/authService";
+import { ROLE_NAME_MAP } from "../constants/role";
 
 class UserStore {
   // 状态
@@ -14,31 +16,44 @@ class UserStore {
   login = async (username, password) => {
     this.isLoading = true;
     try {
-      // 模拟登录请求
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // 调用真实登录API
+      const response = await login(username, password);
 
-      // Mock 登录逻辑
-      if (username === "admin" && password === "123456") {
-        const mockToken = "mock-token-123456";
-        const mockUserInfo = {
-          id: 1,
-          username: "admin",
-          name: "管理员",
-          role: "admin",
-        };
+      if (response.code === 200) {
+        const { token, user } = response.data;
 
-        this.token = mockToken;
-        this.userInfo = mockUserInfo;
-        localStorage.setItem("token", mockToken);
+        this.token = token;
+        this.userInfo = user;
+        localStorage.setItem("token", token);
+
         return { success: true };
       } else {
-        return { success: false, message: "用户名或密码错误" };
+        return { success: false, message: response.message || "登录失败" };
       }
     } catch (error) {
       console.log(error);
       return { success: false, message: "登录失败，请重试" };
     } finally {
       this.isLoading = false;
+    }
+  };
+
+  // 获取当前用户信息
+  getCurrentUserInfo = async () => {
+    try {
+      const response = await getCurrentUser();
+      if (response.code === 200) {
+        this.userInfo = response.data.user;
+        return { success: true, user: response.data.user };
+      } else {
+        return {
+          success: false,
+          message: response.message || "获取用户信息失败",
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "获取用户信息失败，请重试" };
     }
   };
 
@@ -51,6 +66,12 @@ class UserStore {
   // Getters
   get isLoggedIn() {
     return !!this.token;
+  }
+
+  // 获取用户角色名称
+  get roleName() {
+    if (!this.userInfo) return "";
+    return ROLE_NAME_MAP[this.userInfo.role_id] || "未知角色";
   }
 }
 

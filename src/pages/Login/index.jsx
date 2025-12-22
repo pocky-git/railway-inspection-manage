@@ -9,17 +9,11 @@ const Login = observer(() => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    try {
-      const result = await userStore.login(values.username, values.password);
+    const result = await userStore.login(values.username, values.password);
 
-      if (result.success) {
-        message.success("登录成功");
-        navigate("/");
-      } else {
-        message.error(result.message || "登录失败");
-      }
-    } catch (error) {
-      message.error(error, "登录失败，请重试");
+    if (result.success) {
+      message.success("登录成功");
+      navigate("/");
     }
   };
 
@@ -64,9 +58,6 @@ const Login = observer(() => {
             </Button>
           </Form.Item>
         </Form>
-        <div className={styles["login-tip"]}>
-          <p>提示：用户名: admin，密码: 123456</p>
-        </div>
       </Card>
     </div>
   );

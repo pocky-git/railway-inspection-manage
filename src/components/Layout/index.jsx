@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { userStore } from "../../store";
-import { routes } from "../../config/routes";
+import { routes, getRoutesByRole } from "../../config/routes";
 import styles from "./styles.module.css";
 
 const { Header, Sider, Content } = Layout;
@@ -44,12 +44,14 @@ const AdminLayout = observer(({ children }) => {
   ];
 
   // 侧边栏菜单配置
-  const menuItems = routes.map((item) => ({
-    key: item.path,
-    icon: item.icon,
-    label: item.label,
-    onClick: () => navigate(item.path),
-  }));
+  const menuItems = getRoutesByRole(userStore.userInfo?.role_id).map(
+    (item) => ({
+      key: item.path,
+      icon: item.icon,
+      label: item.label,
+      onClick: () => navigate(item.path),
+    })
+  );
 
   return (
     <Layout className={styles["admin-layout"]}>
@@ -91,7 +93,9 @@ const AdminLayout = observer(({ children }) => {
               <div className={styles["user-info"]}>
                 <Avatar icon={<UserOutlined />} />
                 <span className={styles["username"]}>
-                  {userStore.userInfo?.name || "管理员"}
+                  {userStore.userInfo?.real_name ||
+                    userStore.userInfo?.username ||
+                    "管理员"}
                 </span>
               </div>
             </Dropdown>

@@ -12,7 +12,9 @@
   "dependencies": {
     "@ant-design/pro-components": "^2.8.10",
     "@ebay/nice-modal-react": "^1.2.13",
+    "ahooks": "^3.9.6",
     "antd": "^6.0.0",
+    "axios": "^1.13.2",
     "dayjs": "^1.11.19",
     "lodash": "^4.17.21",
     "mobx": "^6.15.0",
