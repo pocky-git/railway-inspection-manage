@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Table,
   Button,
@@ -12,42 +12,33 @@ import {
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
+import { usePagination } from "ahooks";
 import { getTenants, addTenant, deleteTenant } from "../../service";
-import { ROLE_ID } from "../../constants/role";
-import { userStore } from "../../store";
 
 const TenantManagement = observer(() => {
-  const [tenants, setTenants] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [total, setTotal] = useState(0);
 
-  // 获取租户列表
-  const fetchTenants = async () => {
-    setLoading(true);
-    try {
-      const response = await getTenants(currentPage, pageSize);
+  const { pagination, data, loading, refresh } = usePagination(
+    async ({ current, pageSize }) => {
+      let total = 0;
+      let list = [];
+      try {
+        const response = await getTenants(current, pageSize);
 
-      if (response.code === 200) {
-        setTenants(response.data.list);
-        setTotal(response.data.total);
+        if (response.code === 200) {
+          list = response.data.list;
+          total = response.data.total;
+        }
+      } catch (error) {
+        console.error("获取租户列表失败:", error);
       }
-    } catch (error) {
-      console.error("获取租户列表失败:", error);
-    } finally {
-      setLoading(false);
+      return {
+        list,
+        total,
+      };
     }
-  };
-
-  // 组件加载时获取租户列表
-  useEffect(() => {
-    if (userStore.userInfo?.role_id === ROLE_ID.SUPER_ADMIN) {
-      fetchTenants();
-    }
-  }, [currentPage, pageSize]);
+  );
 
   // 显示添加租户模态框
   const showAddModal = () => {
@@ -62,7 +53,6 @@ const TenantManagement = observer(() => {
 
   // 添加租户
   const handleAddTenant = async (values) => {
-    setLoading(true);
     try {
       const response = await addTenant(values);
 
@@ -70,29 +60,24 @@ const TenantManagement = observer(() => {
         message.success("租户添加成功");
         setIsModalVisible(false);
         form.resetFields();
-        fetchTenants();
+        refresh();
       }
     } catch (error) {
       console.error("添加租户失败:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // 删除租户
   const handleDeleteTenant = async (id) => {
-    setLoading(true);
     try {
       const response = await deleteTenant(id);
 
       if (response.code === 200) {
         message.success("租户删除成功");
-        fetchTenants();
+        refresh();
       }
     } catch (error) {
       console.error("删除租户失败:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -152,18 +137,10 @@ const TenantManagement = observer(() => {
 
       <Table
         columns={columns}
-        dataSource={tenants}
+        dataSource={data?.list || []}
         rowKey="_id"
         loading={loading}
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: total,
-          onChange: (page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          },
-        }}
+        pagination={pagination}
       />
 
       {/* 添加租户模态框 */}

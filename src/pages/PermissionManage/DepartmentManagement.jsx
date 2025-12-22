@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
+import { usePagination } from "ahooks";
 import { userStore } from "../../store";
 import { ROLE_ID } from "../../constants/role";
 import { getDepartments, addDepartment, deleteDepartment } from "../../service";
@@ -21,41 +22,40 @@ import { getTenants } from "../../service/tenantService";
 const { Option } = Select;
 
 const DepartmentManagement = observer(() => {
-  const [departments, setDepartments] = useState([]);
   const [tenants, setTenants] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [total, setTotal] = useState(0);
 
-  // 获取部门列表
-  const fetchDepartments = async () => {
-    setLoading(true);
-    try {
-      const params = {
-        page: currentPage,
-        pageSize: pageSize,
+  const { pagination, data, loading, refresh } = usePagination(
+    async ({ current, pageSize }) => {
+      let total = 0;
+      let list = [];
+      try {
+        const params = {
+          page: current,
+          pageSize,
+        };
+
+        // 如果是租户管理员，只获取当前租户的部门
+        if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
+          params.tenant_id = userStore.userInfo.tenant_id;
+        }
+
+        const response = await getDepartments(params);
+
+        if (response.code === 200) {
+          list = response.data.list;
+          total = response.data.total;
+        }
+      } catch (error) {
+        console.error("获取部门列表失败:", error);
+      }
+      return {
+        list,
+        total,
       };
-
-      // 如果是租户管理员，只获取当前租户的部门
-      if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-        params.tenant_id = userStore.userInfo.tenant_id;
-      }
-
-      const response = await getDepartments(params);
-
-      if (response.code === 200) {
-        setDepartments(response.data.list);
-        setTotal(response.data.total);
-      }
-    } catch (error) {
-      console.error("获取部门列表失败:", error);
-    } finally {
-      setLoading(false);
     }
-  };
+  );
 
   // 获取租户列表（仅超级管理员需要）
   const fetchTenants = async () => {
@@ -71,12 +71,11 @@ const DepartmentManagement = observer(() => {
 
   // 组件加载时获取数据
   useEffect(() => {
-    fetchDepartments();
     // 只有超级管理员需要获取租户列表
     if (userStore.userInfo?.role_id === ROLE_ID.SUPER_ADMIN) {
       fetchTenants();
     }
-  }, [currentPage, pageSize]);
+  }, []);
 
   // 显示添加部门模态框
   const showAddModal = () => {
@@ -91,7 +90,6 @@ const DepartmentManagement = observer(() => {
 
   // 添加部门
   const handleAddDepartment = async (values) => {
-    setLoading(true);
     try {
       // 如果是租户管理员，自动设置当前租户ID
       if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
@@ -104,29 +102,24 @@ const DepartmentManagement = observer(() => {
         message.success("部门添加成功");
         setIsModalVisible(false);
         form.resetFields();
-        fetchDepartments();
+        refresh();
       }
     } catch (error) {
       console.error("添加部门失败:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // 删除部门
   const handleDeleteDepartment = async (id) => {
-    setLoading(true);
     try {
       const response = await deleteDepartment(id);
 
       if (response.code === 200) {
         message.success("部门删除成功");
-        fetchDepartments();
+        refresh();
       }
     } catch (error) {
       console.error("删除部门失败:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -179,18 +172,10 @@ const DepartmentManagement = observer(() => {
 
       <Table
         columns={columns}
-        dataSource={departments}
+        dataSource={data?.list || []}
         rowKey="_id"
         loading={loading}
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: total,
-          onChange: (page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          },
-        }}
+        pagination={pagination}
       />
 
       {/* 添加部门模态框 */}

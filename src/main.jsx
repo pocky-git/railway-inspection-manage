@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router-dom";
 import { ConfigProvider } from "antd";
@@ -7,11 +6,9 @@ import App from "./App.jsx";
 import "antd/dist/reset.css";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <HashRouter>
-      <ConfigProvider locale={zhCN}>
-        <App />
-      </ConfigProvider>
-    </HashRouter>
-  </StrictMode>
+  <HashRouter>
+    <ConfigProvider locale={zhCN}>
+      <App />
+    </ConfigProvider>
+  </HashRouter>
 );
