@@ -36,11 +36,6 @@ const DepartmentManagement = observer(() => {
           pageSize,
         };
 
-        // 如果是租户管理员，只获取当前租户的部门
-        if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-          params.tenant_id = userStore.userInfo.tenant_id;
-        }
-
         const response = await getDepartments(params);
 
         if (response.code === 200) {
@@ -91,11 +86,6 @@ const DepartmentManagement = observer(() => {
   // 添加部门
   const handleAddDepartment = async (values) => {
     try {
-      // 如果是租户管理员，自动设置当前租户ID
-      if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-        values.tenant_id = userStore.userInfo.tenant_id;
-      }
-
       const response = await addDepartment(values);
 
       if (response.code === 200) {

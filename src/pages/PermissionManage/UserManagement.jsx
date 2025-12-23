@@ -39,15 +39,6 @@ const UserManagement = observer(() => {
           pageSize,
         };
 
-        // 根据角色过滤数据
-        if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-          // 租户管理员只能看到自己租户的用户
-          params.tenant_id = userStore.userInfo.tenant_id;
-        } else if (userStore.userInfo?.role_id === ROLE_ID.DEPARTMENT_ADMIN) {
-          // 部门管理员只能看到自己部门的用户
-          params.department_id = userStore.userInfo.department_id;
-        }
-
         const response = await getUsers(params);
 
         if (response.code === 200) {
@@ -70,11 +61,6 @@ const UserManagement = observer(() => {
     try {
       const params = { page: 1, pageSize: 100 };
 
-      // 如果是租户管理员，只获取自己的租户
-      if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-        params._id = userStore.userInfo.tenant_id;
-      }
-
       const response = await getTenants(params.page, params.pageSize, params);
       if (response.code === 200) {
         setTenants(response.data.list);
@@ -92,13 +78,7 @@ const UserManagement = observer(() => {
         pageSize: 100,
       };
 
-      // 如果是租户管理员或部门管理员，只获取自己租户的部门
-      if (userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN) {
-        params.tenant_id = userStore.userInfo.tenant_id;
-      } else if (userStore.userInfo?.role_id === ROLE_ID.DEPARTMENT_ADMIN) {
-        params.tenant_id = userStore.userInfo.tenant_id;
-        params._id = userStore.userInfo.department_id;
-      } else if (tenantId) {
+      if (tenantId) {
         // 如果是超级管理员选择了租户，获取该租户的部门
         params.tenant_id = tenantId;
       }
@@ -127,15 +107,6 @@ const UserManagement = observer(() => {
   // 显示添加用户模态框
   const showAddModal = () => {
     setIsModalVisible(true);
-    // 如果是租户管理员或部门管理员，自动设置租户ID
-    if (
-      userStore.userInfo?.role_id === ROLE_ID.TENANT_ADMIN ||
-      userStore.userInfo?.role_id === ROLE_ID.DEPARTMENT_ADMIN
-    ) {
-      form.setFieldsValue({ tenant_id: userStore.userInfo.tenant_id });
-      // 更新部门列表
-      fetchDepartments(userStore.userInfo.tenant_id);
-    }
   };
 
   // 关闭模态框
@@ -147,11 +118,6 @@ const UserManagement = observer(() => {
   // 添加用户
   const handleAddUser = async (values) => {
     try {
-      // 设置默认角色为普通用户
-      if (!values.role_id) {
-        values.role_id = ROLE_ID.REGULAR_USER;
-      }
-
       const response = await addUser(values);
 
       if (response.code === 200) {
@@ -390,7 +356,7 @@ const UserManagement = observer(() => {
           )}
 
           {/* 所属部门 */}
-          {userStore.userInfo?.role_id !== ROLE_ID.REGULAR_USER && (
+          {userStore.userInfo?.role_id !== ROLE_ID.DEPARTMENT_ADMIN && (
             <Form.Item
               name="department_id"
               label="所属部门"
@@ -407,21 +373,19 @@ const UserManagement = observer(() => {
           )}
 
           {/* 角色 */}
-          {userStore.userInfo?.role_id !== ROLE_ID.REGULAR_USER && (
-            <Form.Item
-              name="role_id"
-              label="角色"
-              rules={[{ required: true, message: "请选择角色" }]}
-            >
-              <Select placeholder="请选择角色">
-                {getAvailableRoles().map((role) => (
-                  <Option key={role.value} value={role.value}>
-                    {role.label}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          )}
+          <Form.Item
+            name="role_id"
+            label="角色"
+            rules={[{ required: true, message: "请选择角色" }]}
+          >
+            <Select placeholder="请选择角色">
+              {getAvailableRoles().map((role) => (
+                <Option key={role.value} value={role.value}>
+                  {role.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
           {/* 状态 */}
           <Form.Item name="status" label="状态" initialValue={true}>
