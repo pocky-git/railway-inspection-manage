@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { userStore } from "../../store";
-import { routes, getRoutesByRole } from "../../config/routes";
+import { getRoutesByRole } from "../../config/routes";
 import styles from "./styles.module.css";
 
 const { Header, Sider, Content } = Layout;
@@ -17,12 +17,9 @@ const { Header, Sider, Content } = Layout;
 const AdminLayout = observer(({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const pageName = routes.find(
-    (item) => item.path === location.pathname
-  )?.label;
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   // 处理退出登录
@@ -44,14 +41,7 @@ const AdminLayout = observer(({ children }) => {
   ];
 
   // 侧边栏菜单配置
-  const menuItems = getRoutesByRole(userStore.userInfo?.role_id).map(
-    (item) => ({
-      key: item.path,
-      icon: item.icon,
-      label: item.label,
-      onClick: () => navigate(item.path),
-    })
-  );
+  const menuItems = getRoutesByRole(userStore.userInfo?.role_id);
 
   return (
     <Layout className={styles["admin-layout"]}>
@@ -68,6 +58,7 @@ const AdminLayout = observer(({ children }) => {
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
+          onClick={({ key }) => navigate(key)}
         />
       </Sider>
       <Layout>
@@ -86,7 +77,6 @@ const AdminLayout = observer(({ children }) => {
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
             />
-            <div className={styles["page-name"]}>{pageName}</div>
           </div>
           <div className={styles["header-right"]}>
             <Dropdown menu={{ items: userMenuItems }}>
@@ -101,17 +91,7 @@ const AdminLayout = observer(({ children }) => {
             </Dropdown>
           </div>
         </Header>
-        <Content className={styles["admin-content"]}>
-          <div
-            style={{
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-            className={styles["content-wrapper"]}
-          >
-            {children}
-          </div>
-        </Content>
+        <Content className={styles["admin-content"]}>{children}</Content>
       </Layout>
     </Layout>
   );

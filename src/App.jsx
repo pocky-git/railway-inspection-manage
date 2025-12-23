@@ -1,33 +1,40 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { userStore } from "./store";
-import { routes, getRoutesByRole } from "./config/routes";
+import { getRoutesByRole } from "./config/routes";
+import AdminLayout from "./components/Layout";
 
 // 懒加载页面组件
-const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"));
-const Main = lazy(() => import("./pages/Main"));
 
 // 私有路由组件，用于保护需要登录的页面
-const PrivateRoute = observer(({ children, requiredRoles }) => {
+const PrivateRoute = observer(({ children }) => {
   // 如果用户未登录，重定向到登录页
   if (!userStore.isLoggedIn) {
     return <Navigate to="/login" replace />;
-  }
-
-  // 如果配置了角色要求，检查用户角色是否匹配
-  if (requiredRoles && requiredRoles.length > 0) {
-    if (!requiredRoles.includes(userStore.userInfo?.role_id)) {
-      // 如果角色不匹配，重定向到404页面
-      return <Navigate to="/404" replace />;
-    }
   }
 
   return children;
 });
 
 const App = observer(() => {
+  const routesByRole = useMemo(
+    () =>
+      userStore.userInfo?.role_id
+        ? getRoutesByRole(userStore.userInfo?.role_id)
+        : [],
+    [userStore.userInfo?.role_id]
+  );
+
+  const renderRoutes = (routes) => {
+    return routes.map((item) => (
+      <Route key={item.path} path={item.path} element={item.element}>
+        {!!item.children?.length && renderRoutes(item.children)}
+      </Route>
+    ));
+  };
+
   useEffect(() => {
     // 检查是否有已保存的token
     const token = localStorage.getItem("token");
@@ -40,39 +47,27 @@ const App = observer(() => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-        <Route path="/404" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Main />
-            </PrivateRoute>
-          }
-        >
-          {/* 根据用户角色过滤路由 */}
+        <>
           <Route
             path="/"
             element={
-              <Navigate
-                to={getRoutesByRole(userStore.userInfo?.role_id)[0]?.path}
-                replace
-              />
+              <PrivateRoute>
+                <AdminLayout>
+                  <Outlet />
+                </AdminLayout>
+              </PrivateRoute>
             }
-          />
-          {routes.map((item) => (
+          >
+            {/* 根据用户角色过滤路由 */}
             <Route
-              key={item.path}
-              path={item.path}
-              element={
-                <PrivateRoute requiredRoles={item.roles}>
-                  {item.element}
-                </PrivateRoute>
-              }
+              path="/"
+              element={<Navigate to={routesByRole[0]?.path} replace />}
             />
-          ))}
-        </Route>
-        <Route path="*" element={<Navigate to="/404" replace />} />
+            {renderRoutes(routesByRole)}
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
       </Routes>
     </Suspense>
   );
