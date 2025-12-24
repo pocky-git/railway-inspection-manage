@@ -20,6 +20,7 @@ const data = new Array(10).fill({}).map(() => ({
         statistic={{
           title: "总数量",
           value: 100,
+          status: "processing",
         }}
       />
       <Divider />
@@ -27,24 +28,28 @@ const data = new Array(10).fill({}).map(() => ({
         statistic={{
           title: "标签类别",
           value: 100,
+          status: "default",
         }}
       />
       <StatisticCard
         statistic={{
           title: "标签数",
           value: 100,
+          status: "default",
         }}
       />
       <StatisticCard
         statistic={{
           title: "已标注",
           value: 100,
+          status: "success",
         }}
       />
       <StatisticCard
         statistic={{
           title: "未标注",
           value: 100,
+          status: "error",
         }}
       />
     </StatisticCard.Group>

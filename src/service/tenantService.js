@@ -7,8 +7,8 @@ import api from "../utils/api";
  * @param {Object} [extraParams] - 额外查询参数（可选）
  * @returns {Promise<Object>} 租户列表数据
  */
-export const getTenants = async (page = 1, pageSize = 10, extraParams = {}) => {
-  return api.get("/tenant", { params: { page, pageSize, ...extraParams } });
+export const getTenants = async (params) => {
+  return api.get("/tenant", { params });
 };
 
 /**
