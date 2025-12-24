@@ -1,19 +1,22 @@
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { Button, Popconfirm } from "antd";
 import { ROLE_ID } from "../../../constants/role";
 import { getTenants } from "../../../service/tenantService";
+import AddDepartmentModal from "./AddDepartmentModal";
 
-export const getColumns = ({ handleDeleteDepartment, role_id }) => {
+export const getColumns = ({ handleDeleteDepartment, role_id, reload }) => {
   return [
     {
       title: "部门名称",
       dataIndex: "name",
       key: "name",
+      width: 300,
     },
     {
       title: "所属租户",
       dataIndex: "tenant_name",
       key: "tenant_id",
+      width: 300,
       render: (tenant_name) => tenant_name || "-",
       valueType: "select",
       search: role_id === ROLE_ID.SUPER_ADMIN,
@@ -37,6 +40,7 @@ export const getColumns = ({ handleDeleteDepartment, role_id }) => {
       title: "状态",
       dataIndex: "status",
       key: "status",
+      width: 300,
       valueEnum: {
         true: {
           text: "启用",
@@ -55,6 +59,16 @@ export const getColumns = ({ handleDeleteDepartment, role_id }) => {
       key: "option",
       render: (_, record) => (
         <>
+          <AddDepartmentModal
+            onFinish={reload}
+            id={record._id}
+            initialValues={record}
+            trigger={
+              <Button variant="text" color="primary" icon={<FormOutlined />}>
+                编辑
+              </Button>
+            }
+          />
           <Popconfirm
             title="确定要删除这个部门吗？"
             onConfirm={() => {

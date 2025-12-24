@@ -1,10 +1,11 @@
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { Button, Popconfirm } from "antd";
 import { ROLE_NAME_MAP, ROLE_ID } from "../../../constants/role";
 import { getTenants } from "../../../service/tenantService";
 import { getDepartments } from "../../../service/departmentService";
+import AddUserModal from "./AddUserModal";
 
-export const getColumns = ({ role_id, handleDeleteUser }) => {
+export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
   return [
     {
       title: "用户名称",
@@ -57,9 +58,9 @@ export const getColumns = ({ role_id, handleDeleteUser }) => {
       key: "department_id",
       render: (department_name) => department_name || "-",
       valueType: "select",
-      search: [ROLE_ID.SUPER_ADMIN, ROLE_ID.TENANT_ADMIN].includes(role_id),
+      search: role_id <= ROLE_ID.TENANT_ADMIN,
       request: async () => {
-        if (role_id === ROLE_ID.DEPARTMENT_ADMIN) {
+        if (role_id > ROLE_ID.TENANT_ADMIN) {
           return [];
         }
         return getDepartments({
@@ -105,6 +106,16 @@ export const getColumns = ({ role_id, handleDeleteUser }) => {
       key: "option",
       render: (_, record) => (
         <>
+          <AddUserModal
+            onFinish={reload}
+            id={record._id}
+            initialValues={record}
+            trigger={
+              <Button variant="text" color="primary" icon={<FormOutlined />}>
+                编辑
+              </Button>
+            }
+          />
           <Popconfirm
             title="确定要删除这个用户吗？"
             onConfirm={() => {

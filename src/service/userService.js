@@ -1,4 +1,4 @@
-import api from '../utils/api';
+import api from "../utils/api";
 
 /**
  * 获取用户列表
@@ -10,7 +10,7 @@ import api from '../utils/api';
  * @returns {Promise<Object>} 用户列表数据
  */
 export const getUsers = async (params) => {
-  return api.get('/user', { params });
+  return api.get("/user", { params });
 };
 
 /**
@@ -27,7 +27,7 @@ export const getUsers = async (params) => {
  * @returns {Promise<Object>} 添加结果
  */
 export const addUser = async (userData) => {
-  return api.post('/user', userData);
+  return api.post("/user", userData);
 };
 
 /**
@@ -37,4 +37,14 @@ export const addUser = async (userData) => {
  */
 export const deleteUser = async (id) => {
   return api.delete(`/user/${id}`);
+};
+
+/**
+ * 更新用户
+ * @param {string} id - 用户ID
+ * @param {Object} updateData - 更新数据
+ * @returns {Promise<Object>} 更新结果
+ */
+export const updateUser = async (id, updateData) => {
+  return api.put(`/user/${id}`, updateData);
 };

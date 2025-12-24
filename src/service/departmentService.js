@@ -1,4 +1,4 @@
-import api from '../utils/api';
+import api from "../utils/api";
 
 /**
  * 获取部门列表
@@ -10,7 +10,7 @@ import api from '../utils/api';
  * @returns {Promise<Object>} 部门列表数据
  */
 export const getDepartments = async (params) => {
-  return api.get('/department', { params });
+  return api.get("/department", { params });
 };
 
 /**
@@ -22,7 +22,7 @@ export const getDepartments = async (params) => {
  * @returns {Promise<Object>} 添加结果
  */
 export const addDepartment = async (departmentData) => {
-  return api.post('/department', departmentData);
+  return api.post("/department", departmentData);
 };
 
 /**
@@ -32,4 +32,16 @@ export const addDepartment = async (departmentData) => {
  */
 export const deleteDepartment = async (id) => {
   return api.delete(`/department/${id}`);
+};
+
+/**
+ * 更新部门
+ * @param {string} id - 部门ID
+ * @param {Object} departmentData - 部门数据
+ * @param {string} departmentData.name - 部门名称
+ * @param {boolean} [departmentData.status] - 状态（可选）
+ * @returns {Promise<Object>} 更新结果
+ */
+export const updateDepartment = async (id, departmentData) => {
+  return api.put(`/department/${id}`, departmentData);
 };

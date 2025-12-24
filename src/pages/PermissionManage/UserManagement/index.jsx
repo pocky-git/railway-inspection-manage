@@ -25,9 +25,14 @@ const UserManagement = observer(() => {
     }
   };
 
+  const handleReload = () => {
+    actionRef.current?.reload?.();
+  };
+
   const columns = getColumns({
     role_id: userStore.userInfo?.role_id,
     handleDeleteUser,
+    reload: handleReload,
   });
 
   return (
@@ -70,7 +75,14 @@ const UserManagement = observer(() => {
           labelWidth: "auto",
         }}
         toolBarRender={() => [
-          <AddUserModal onFinish={() => actionRef.current?.reload?.()} />,
+          <AddUserModal
+            onFinish={() => actionRef.current?.reload?.()}
+            trigger={
+              <Button key="button" icon={<PlusOutlined />} type="primary">
+                添加用户
+              </Button>
+            }
+          />,
         ]}
       />
     </PageContainer>

@@ -1,41 +1,42 @@
-import { PlusOutlined } from "@ant-design/icons";
 import {
   ModalForm,
   ProFormSelect,
   ProFormText,
 } from "@ant-design/pro-components";
-import { Button, Form, message } from "antd";
-import { addDepartment } from "../../../service/departmentService";
+import { Form, message } from "antd";
+import {
+  addDepartment,
+  updateDepartment,
+} from "../../../service/departmentService";
 import { getTenants } from "../../../service/tenantService";
 import userStore from "../../../store/userStore";
 import { ROLE_ID } from "../../../constants/role";
 
-const AddDepartmentModal = ({ onFinish }) => {
+const AddDepartmentModal = ({ onFinish, trigger, id, initialValues }) => {
   const [form] = Form.useForm();
 
   return (
     <ModalForm
-      title="添加部门"
-      trigger={
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          添加部门
-        </Button>
-      }
+      title={id ? "编辑部门" : "添加部门"}
+      trigger={trigger}
       form={form}
       autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
       }}
+      onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
       onFinish={async (values) => {
         try {
-          const response = await addDepartment(values);
+          const response = await (id
+            ? updateDepartment(id, values)
+            : addDepartment(values));
           if (response.code === 200) {
-            message.success("部门添加成功");
+            message.success("保存成功");
             onFinish?.();
             return true;
           }
         } catch (error) {
-          console.error("添加部门失败:", error);
+          console.error("保存失败:", error);
         }
         return false;
       }}

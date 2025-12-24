@@ -33,3 +33,14 @@ export const addTenant = async (tenantData) => {
 export const deleteTenant = async (id) => {
   return api.delete(`/tenant/${id}`);
 };
+
+/**
+ * 更新租户
+ * @param {string} id - 租户ID
+ * @param {Object} tenantData - 租户数据
+ * @param {string} tenantData.name - 租户名称
+ * @returns {Promise<Object>} 更新结果
+ */
+export const updateTenant = async (id, tenantData) => {
+  return api.put(`/tenant/${id}`, tenantData);
+};

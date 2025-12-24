@@ -28,9 +28,14 @@ const DepartmentManagement = observer(() => {
     }
   };
 
+  const handleReload = () => {
+    actionRef.current?.reload?.();
+  };
+
   const columns = getColumns({
     handleDeleteDepartment,
     role_id: userStore.userInfo?.role_id,
+    reload: handleReload,
   });
 
   return (
@@ -73,7 +78,14 @@ const DepartmentManagement = observer(() => {
           labelWidth: "auto",
         }}
         toolBarRender={() => [
-          <AddDepartmentModal onFinish={() => actionRef.current?.reload?.()} />,
+          <AddDepartmentModal
+            onFinish={() => actionRef.current?.reload?.()}
+            trigger={
+              <Button key="button" icon={<PlusOutlined />} type="primary">
+                添加部门
+              </Button>
+            }
+          />,
         ]}
       />
     </PageContainer>

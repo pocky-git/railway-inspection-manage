@@ -1,19 +1,18 @@
-import { PlusOutlined } from "@ant-design/icons";
 import {
   ModalForm,
   ProFormDependency,
   ProFormSelect,
   ProFormText,
 } from "@ant-design/pro-components";
-import { Button, Form, message } from "antd";
+import { Form, message } from "antd";
 import { useMemo } from "react";
-import { addUser } from "../../../service/userService";
+import { addUser, updateUser } from "../../../service/userService";
 import { getTenants } from "../../../service/tenantService";
 import { getDepartments } from "../../../service/departmentService";
 import userStore from "../../../store/userStore";
 import { ROLE_ID, ROLE_NAME_MAP } from "../../../constants/role";
 
-const AddUserModal = ({ onFinish }) => {
+const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
   const [form] = Form.useForm();
   const roles = useMemo(() => {
     const currentRole = userStore.userInfo?.role_id;
@@ -62,41 +61,40 @@ const AddUserModal = ({ onFinish }) => {
 
   return (
     <ModalForm
-      title="添加用户"
-      trigger={
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          添加用户
-        </Button>
-      }
+      title={id ? "编辑用户" : "添加用户"}
+      trigger={trigger}
       form={form}
       autoFocusFirstInput
+      onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
       modalProps={{
         destroyOnClose: true,
       }}
       onFinish={async (values) => {
         try {
-          const response = await addUser(values);
+          const response = await (id
+            ? updateUser(id, values)
+            : addUser(values));
 
           if (response.code === 200) {
-            message.success("用户添加成功");
+            message.success("保存成功");
             onFinish?.();
             return true;
           }
         } catch (error) {
-          console.error("添加用户失败:", error);
+          console.error("保存失败:", error);
         }
         return false;
       }}
     >
       <ProFormText
-        name="username"
-        label="用户名称"
-        rules={[{ required: true, message: "请输入用户名称" }]}
-      />
-      <ProFormText
         name="real_name"
         label="真实姓名"
         rules={[{ required: true, message: "请输入真实姓名" }]}
+      />
+      <ProFormText
+        name="username"
+        label="用户名称"
+        rules={[{ required: true, message: "请输入用户名称" }]}
       />
       <ProFormText.Password
         name="password"
@@ -133,9 +131,10 @@ const AddUserModal = ({ onFinish }) => {
           }}
         />
       )}
-      {userStore.userInfo?.role_id !== ROLE_ID.DEPARTMENT_ADMIN && (
-        <ProFormDependency name={["tenant_id"]}>
-          {({ tenant_id }) => {
+      {userStore.userInfo?.role_id <= ROLE_ID.TENANT_ADMIN && (
+        <ProFormDependency name={["tenant_id", "role_id"]}>
+          {({ tenant_id, role_id }) => {
+            if (role_id <= ROLE_ID.TENANT_ADMIN) return null;
             form.resetFields(["department_id"]);
             return (
               <ProFormSelect

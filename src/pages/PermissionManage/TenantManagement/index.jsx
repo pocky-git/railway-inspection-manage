@@ -24,8 +24,13 @@ const TenantManagement = observer(() => {
     }
   };
 
+  const handleReload = () => {
+    actionRef.current?.reload?.();
+  };
+
   const columns = getColumns({
     handleDeleteTenant,
+    reload: handleReload,
   });
 
   return (
@@ -68,7 +73,14 @@ const TenantManagement = observer(() => {
           labelWidth: "auto",
         }}
         toolBarRender={() => [
-          <AddTenantModal onFinish={() => actionRef.current?.reload?.()} />,
+          <AddTenantModal
+            trigger={
+              <Button type="primary" icon={<PlusOutlined />}>
+                添加租户
+              </Button>
+            }
+            onFinish={() => actionRef.current?.reload?.()}
+          />,
         ]}
       />
     </PageContainer>
