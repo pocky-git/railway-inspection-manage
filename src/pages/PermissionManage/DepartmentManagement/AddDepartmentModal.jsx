@@ -23,6 +23,7 @@ const AddDepartmentModal = ({ onFinish, trigger, id, initialValues }) => {
       autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
+        width: 500,
       }}
       onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
       onFinish={async (values) => {

@@ -20,6 +20,9 @@ export const getColumns = ({ handleDeleteDepartment, role_id, reload }) => {
       render: (tenant_name) => tenant_name || "-",
       valueType: "select",
       search: role_id === ROLE_ID.SUPER_ADMIN,
+      fieldProps: {
+        showSearch: true,
+      },
       request: async () => {
         if (role_id !== ROLE_ID.SUPER_ADMIN) {
           return [];

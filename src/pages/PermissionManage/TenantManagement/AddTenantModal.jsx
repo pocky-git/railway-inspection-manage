@@ -14,6 +14,7 @@ const AddTenantModal = ({ onFinish, trigger, id, initialValues }) => {
       onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
       modalProps={{
         destroyOnClose: true,
+        width: 500,
       }}
       onFinish={async (values) => {
         try {

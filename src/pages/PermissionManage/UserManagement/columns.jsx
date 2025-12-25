@@ -36,6 +36,9 @@ export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
       render: (tenant_name) => tenant_name || "-",
       valueType: "select",
       search: role_id === ROLE_ID.SUPER_ADMIN,
+      fieldProps: {
+        showSearch: true,
+      },
       request: async () => {
         if (role_id !== ROLE_ID.SUPER_ADMIN) {
           return [];
@@ -59,6 +62,9 @@ export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
       render: (department_name) => department_name || "-",
       valueType: "select",
       search: role_id <= ROLE_ID.TENANT_ADMIN,
+      fieldProps: {
+        showSearch: true,
+      },
       request: async () => {
         if (role_id > ROLE_ID.TENANT_ADMIN) {
           return [];
