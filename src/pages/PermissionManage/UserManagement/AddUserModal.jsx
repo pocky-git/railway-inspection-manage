@@ -39,6 +39,10 @@ const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
     else if (currentRole === ROLE_ID.TENANT_ADMIN) {
       roles.push(
         {
+          value: ROLE_ID.TENANT_ADMIN,
+          label: ROLE_NAME_MAP[ROLE_ID.TENANT_ADMIN],
+        },
+        {
           value: ROLE_ID.DEPARTMENT_ADMIN,
           label: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
         },
@@ -50,10 +54,16 @@ const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
     }
     // 部门管理员只能创建普通用户
     else if (currentRole === ROLE_ID.DEPARTMENT_ADMIN) {
-      roles.push({
-        value: ROLE_ID.REGULAR_USER,
-        label: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
-      });
+      roles.push(
+        {
+          value: ROLE_ID.DEPARTMENT_ADMIN,
+          label: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
+        },
+        {
+          value: ROLE_ID.REGULAR_USER,
+          label: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
+        }
+      );
     }
 
     return roles;

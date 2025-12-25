@@ -79,10 +79,21 @@ export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
       title: "角色",
       dataIndex: "role_id",
       key: "role_id",
-      render: (roleId) => {
-        return ROLE_NAME_MAP[roleId] || "未知";
+      valueType: "select",
+      valueEnum: {
+        [ROLE_ID.SUPER_ADMIN]: {
+          text: ROLE_NAME_MAP[ROLE_ID.SUPER_ADMIN],
+        },
+        [ROLE_ID.TENANT_ADMIN]: {
+          text: ROLE_NAME_MAP[ROLE_ID.TENANT_ADMIN],
+        },
+        [ROLE_ID.DEPARTMENT_ADMIN]: {
+          text: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
+        },
+        [ROLE_ID.REGULAR_USER]: {
+          text: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
+        },
       },
-      search: false,
     },
     {
       title: "状态",
