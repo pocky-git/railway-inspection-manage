@@ -25,6 +25,9 @@
           border-radius: 4px;
           font-size: 14px;
           cursor: pointer;
+          &:last-child {
+            margin-right: 0;
+          }
           &.active,
           &:hover {
             background: #394150;
@@ -32,12 +35,32 @@
         }
       }
     }
+    .line {
+      width: 1px;
+      height: 18px;
+      background: #394150;
+      margin: 0 20px;
+    }
     .redoAndUndo {
-      margin-left: 20px;
+      display: flex;
       .icon {
         color: #fff;
-        margin-right: 14px;
+        margin-right: 4px;
         font-size: 16px;
+        width: 28px;
+        height: 28px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        &:last-child {
+          margin-right: 0;
+        }
+        &:hover {
+          background: #394150;
+        }
       }
     }
   }

@@ -74,9 +74,13 @@ const ProjectManage = () => {
           },
         }}
         extra={[
-          <Button onClick={handleAddProject} key="1" type="primary">
-            新增项目
-          </Button>,
+          <AddProjectModal
+            trigger={
+              <Button key="0" type="primary">
+                新增项目
+              </Button>
+            }
+          />,
         ]}
       >
         <ProList
@@ -90,12 +94,18 @@ const ProjectManage = () => {
               },
             };
           }}
+          search={{}}
+          request={async (params = {}) => {
+            console.log(params);
+          }}
           metas={{
-            title: {},
-            subTitle: {},
-            type: {},
-            avatar: {},
-            content: {},
+            title: {
+              dataIndex: "title",
+              title: "项目名称",
+            },
+            content: {
+              search: false,
+            },
             actions: {
               cardActionProps: "extra",
             },

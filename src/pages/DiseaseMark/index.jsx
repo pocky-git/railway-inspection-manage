@@ -97,11 +97,12 @@ const DiseaseMark = () => {
     // 加载对应图片的标注
     const imgAnnotations = annotations[currentImage.id] || [];
     setCurrentAnnotations(imgAnnotations);
-    setZoom(100); // 重置缩放
-    setImageOffset({ x: 0, y: 0 }); // 重置图片偏移
+    // 重置图片偏移
+    setImageOffset({ x: 0, y: 0 });
     // 切换图片时重置撤销和复原栈
     setUndoStack([]);
     setRedoStack([]);
+    // 初始缩放将由imageUrl变化的useEffect处理
   };
 
   // 鼠标按下事件 - 开始拖拽
@@ -358,6 +359,24 @@ const DiseaseMark = () => {
     });
   };
 
+  // 检查坐标是否在图片范围内
+  const isPointInImageBounds = (canvasX, canvasY) => {
+    const scaleFactor = zoom / 100;
+    const scaledImageWidth = imageWidth * scaleFactor;
+    const scaledImageHeight = imageHeight * scaleFactor;
+    const centerX = (canvasSize.width - scaledImageWidth) / 2;
+    const centerY = (canvasSize.height - scaledImageHeight) / 2;
+    const imageX = centerX + imageOffset.x;
+    const imageY = centerY + imageOffset.y;
+
+    return (
+      canvasX >= imageX &&
+      canvasX <= imageX + scaledImageWidth &&
+      canvasY >= imageY &&
+      canvasY <= imageY + scaledImageHeight
+    );
+  };
+
   // 转换鼠标坐标到实际图片坐标
   const getImageCoordinates = (e) => {
     const canvas = canvasRef.current;
@@ -386,6 +405,12 @@ const DiseaseMark = () => {
       setCurrentAnnotation({ x, y, width: 0, height: 0 });
       setIsDrawing(true);
     } else if (annotationType === "polygon") {
+      // 检查点击位置是否在图片范围内
+      if (!isPointInImageBounds(x, y)) {
+        message.warning("请在图片范围内添加多边形顶点");
+        return;
+      }
+
       // 多边形模式 - 添加顶点
       if (!isDrawing) {
         // 开始绘制多边形
@@ -506,11 +531,18 @@ const DiseaseMark = () => {
     const actualImageX = centerX + imageOffset.x;
     const actualImageY = centerY + imageOffset.y;
 
-    // 转换多边形顶点为原始图片坐标
-    const originalPoints = polygonPoints.map((point) => ({
-      x: (point.x - actualImageX) / scaleFactor,
-      y: (point.y - actualImageY) / scaleFactor,
-    }));
+    // 转换多边形顶点为原始图片坐标，并确保它们在图片范围内
+    const originalPoints = polygonPoints.map((point) => {
+      // 计算原始图片坐标
+      let x = (point.x - actualImageX) / scaleFactor;
+      let y = (point.y - actualImageY) / scaleFactor;
+
+      // 确保坐标在图片范围内
+      x = Math.max(0, Math.min(x, imageWidth));
+      y = Math.max(0, Math.min(y, imageHeight));
+
+      return { x, y };
+    });
 
     const newAnnotation = {
       id: Date.now(),
@@ -695,6 +727,7 @@ const DiseaseMark = () => {
 
     // 更新annotations对象
     const currentImage = imageList[currentImageIndex];
+
     setAnnotations((prev) => ({
       ...prev,
       [currentImage.id]: previousAnnotations,
@@ -768,6 +801,22 @@ const DiseaseMark = () => {
       setImageWidth(img.width);
       setImageHeight(img.height);
 
+      // 计算适合的初始缩放比例，确保图片能完整显示在Canvas中
+      const containerWidth = newSize.width;
+      const containerHeight = newSize.height;
+      const imgWidth = img.width;
+      const imgHeight = img.height;
+
+      // 计算宽高缩放比例
+      const scaleX = containerWidth / imgWidth;
+      const scaleY = containerHeight / imgHeight;
+
+      // 使用较小的缩放比例，确保图片完整显示
+      const initialScale = Math.min(scaleX, scaleY) * 100;
+
+      // 如果图片比容器小，则保持100%缩放
+      setZoom(Math.min(initialScale, 100));
+
       // 设置Canvas高清显示
       setupHighDpiCanvas(canvas, newSize.width, newSize.height);
 
@@ -796,7 +845,7 @@ const DiseaseMark = () => {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [drawAnnotations]);
 
   // 缩放变化时重新绘制
   useEffect(() => {
@@ -847,6 +896,7 @@ const DiseaseMark = () => {
             />
           </Tooltip>
         </div>
+        <div className={styles.line} />
         <div className={styles.redoAndUndo}>
           <Tooltip placement="bottom" title="撤销">
             <UndoOutlined className={styles.icon} onClick={handleUndo} />

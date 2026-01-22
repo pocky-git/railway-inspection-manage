@@ -1,53 +1,58 @@
-import { useState } from "react";
-import { Modal, Form, Upload, Input } from "antd";
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { PlusOutlined } from "@ant-design/icons";
+import { Form } from "antd";
+import {
+  ModalForm,
+  ProFormText,
+  ProFormSelect,
+} from "@ant-design/pro-components";
 
-const AddProjectModal = NiceModal.create(({ onConfirm }) => {
-  const modal = useModal();
+const AddProjectModal = ({ trigger, initialValues, onFinish }) => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (values) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onConfirm?.(values);
-      modal.hide();
-    }, 1000);
+  const handleFinish = async (values) => {
+    onFinish?.(values);
   };
 
   return (
-    <Modal
+    <ModalForm
       title="新建项目"
-      open={modal.visible}
-      okButtonProps={{ autoFocus: true, htmlType: "submit" }}
-      onCancel={() => modal.hide()}
-      bodyStyle={{ paddingTop: 24 }}
-      destroyOnHidden={true}
-      confirmLoading={loading}
-      modalRender={(dom) => (
-        <Form
-          form={form}
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 18 }}
-          layout="horizontal"
-          clearOnDestroy
-          onFinish={(values) => handleSubmit(values)}
-        >
-          {dom}
-        </Form>
-      )}
+      trigger={trigger}
+      form={form}
+      autoFocusFirstInput
+      onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
+      modalProps={{
+        destroyOnClose: true,
+        width: 500,
+      }}
+      onFinish={handleFinish}
     >
-      <Form.Item
-        rules={[{ required: true, message: "请输入项目名称" }]}
+      <ProFormText
+        name="projectName"
         label="项目名称"
-        name="title"
-      >
-        <Input placeholder="请输入项目名称" style={{ width: "100%" }} />
-      </Form.Item>
-    </Modal>
+        rules={[{ required: true, message: "请输入项目名称" }]}
+      />
+
+      <ProFormSelect
+        name="specialty"
+        label="专业"
+        rules={[{ required: true, message: "请选择专业" }]}
+        options={[
+          { label: "工务", value: "specialty1" },
+          { label: "电务", value: "specialty2" },
+          { label: "供电", value: "specialty3" },
+        ]}
+      />
+      <ProFormSelect
+        name="line"
+        label="线路"
+        rules={[{ required: true, message: "请选择线路" }]}
+        options={[
+          { label: "k100-k200", value: "line1" },
+          { label: "k200-k300", value: "line2" },
+          { label: "k300-k400", value: "line3" },
+        ]}
+      />
+    </ModalForm>
   );
-});
+};
 
 export default AddProjectModal;
