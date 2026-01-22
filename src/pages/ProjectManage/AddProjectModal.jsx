@@ -17,13 +17,6 @@ const AddProjectModal = NiceModal.create(({ onConfirm }) => {
     }, 1000);
   };
 
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
-
   return (
     <Modal
       title="新建项目"
@@ -52,27 +45,6 @@ const AddProjectModal = NiceModal.create(({ onConfirm }) => {
         name="title"
       >
         <Input placeholder="请输入项目名称" style={{ width: "100%" }} />
-      </Form.Item>
-      <Form.Item
-        valuePropName="fileList"
-        label="图片"
-        name="image"
-        getValueFromEvent={normFile}
-      >
-        <Upload listType="picture-card">
-          <button
-            style={{
-              color: "inherit",
-              cursor: "inherit",
-              border: 0,
-              background: "none",
-            }}
-            type="button"
-          >
-            <PlusOutlined />
-            <div>上传</div>
-          </button>
-        </Upload>
       </Form.Item>
     </Modal>
   );

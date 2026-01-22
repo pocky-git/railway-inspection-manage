@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { userStore } from "./store";
-import { getRoutesByRole } from "./config/routes";
+import { getRoutes } from "./config/routes";
 import AdminLayout from "./components/Layout";
 
 // 懒加载页面组件
@@ -11,26 +11,20 @@ const Login = lazy(() => import("./pages/Login"));
 // 私有路由组件，用于保护需要登录的页面
 const PrivateRoute = observer(({ children }) => {
   // 如果用户未登录，重定向到登录页
-  if (!userStore.isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!userStore.isLoggedIn) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   return children;
 });
 
 const App = observer(() => {
-  const routesByRole = useMemo(
-    () =>
-      userStore.userInfo?.role_id
-        ? getRoutesByRole(userStore.userInfo?.role_id)
-        : [],
-    [userStore.userInfo?.role_id]
-  );
+  const routes = getRoutes();
 
   const renderRoutes = (routes) => {
     return routes.map((item) => (
-      <Route key={item.path} path={item.path} element={item.element}>
-        {!!item.children?.length && renderRoutes(item.children)}
+      <Route key={item.path} path={item.path} element={item.component}>
+        {!!item.routes?.length && renderRoutes(item.routes)}
       </Route>
     ));
   };
@@ -62,9 +56,9 @@ const App = observer(() => {
             {/* 根据用户角色过滤路由 */}
             <Route
               path="/"
-              element={<Navigate to={routesByRole[0]?.path} replace />}
+              element={<Navigate to={routes[0]?.path} replace />}
             />
-            {renderRoutes(routesByRole)}
+            {renderRoutes(routes)}
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </>

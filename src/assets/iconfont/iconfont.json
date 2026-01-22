@@ -1,0 +1,23 @@
+{
+  "id": "5115364",
+  "name": "铁路巡检系统",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "22329468",
+      "name": "polygon",
+      "font_class": "polygon",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
+      "icon_id": "22436742",
+      "name": "rectangle",
+      "font_class": "rectangle",
+      "unicode": "e6c9",
+      "unicode_decimal": 59081
+    }
+  ]
+}

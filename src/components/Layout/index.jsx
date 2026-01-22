@@ -1,100 +1,87 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Layout, Menu, Button, Avatar, Dropdown, theme } from "antd";
-import {
-  UserOutlined,
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
-import { observer } from "mobx-react-lite";
-import { userStore } from "../../store";
-import { getRoutesByRole } from "../../config/routes";
-import styles from "./styles.module.css";
+import { ProLayout } from "@ant-design/pro-components";
+import { LogoutOutlined } from "@ant-design/icons";
+import { Dropdown } from "antd";
+import { getRoutes } from "../../config/routes";
 
-const { Header, Sider, Content } = Layout;
-
-const AdminLayout = observer(({ children }) => {
+const AdminLayout = ({ children }) => {
+  const routes = getRoutes();
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-
-  // 处理退出登录
-  const handleLogout = () => {
-    userStore.logout();
-    navigate("/login");
-  };
-
-  // 用户菜单配置
-  const userMenuItems = [
-    {
-      key: "logout",
-      label: (
-        <span onClick={handleLogout}>
-          <LogoutOutlined /> 退出登录
-        </span>
-      ),
-    },
-  ];
-
-  // 侧边栏菜单配置
-  const menuItems = getRoutesByRole(userStore.userInfo?.role_id);
 
   return (
-    <Layout className={styles["admin-layout"]}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+    <div
+      style={{
+        height: "100vh",
+      }}
+    >
+      <ProLayout
+        logo={false}
+        title="铁路巡检系统"
+        bgLayoutImgList={[
+          {
+            src: "https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png",
+            left: 85,
+            bottom: 100,
+            height: "303px",
+          },
+          {
+            src: "https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png",
+            bottom: -68,
+            right: -45,
+            height: "303px",
+          },
+          {
+            src: "https://img.alicdn.com/imgextra/i3/O1CN018NxReL1shX85Yz6Cx_!!6000000005798-2-tps-884-496.png",
+            bottom: 0,
+            left: 0,
+            width: "331px",
+          },
+        ]}
+        route={{
+          path: "/",
+          routes,
+        }}
+        location={location}
+        appList={[]}
+        avatarProps={{
+          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+          size: "small",
+          title: "超级管理员",
+          render: (props, dom) => {
+            return (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "logout",
+                      icon: <LogoutOutlined />,
+                      label: "退出登录",
+                    },
+                  ],
+                }}
+              >
+                {dom}
+              </Dropdown>
+            );
+          },
+        }}
+        menuItemRender={(item, dom) => (
+          <div onClick={() => navigate(item.path)}>{dom}</div>
+        )}
+        layout="mix"
+        contentStyle={
+          location.pathname === "/disease-mark"
+            ? {
+                padding: 0,
+              }
+            : null
+        }
       >
-        <div className={styles["logo"]}>
-          {collapsed ? "系统" : "铁路巡检系统"}
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={({ key }) => navigate(key)}
-        />
-      </Sider>
-      <Layout>
-        <Header
-          className={styles["admin-header"]}
-          style={{ background: colorBgContainer }}
-        >
-          <div className={styles["header-left"]}>
-            <Button
-              style={{
-                fontSize: "16px",
-                width: 64,
-                height: 64,
-              }}
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-            />
-          </div>
-          <div className={styles["header-right"]}>
-            <Dropdown menu={{ items: userMenuItems }}>
-              <div className={styles["user-info"]}>
-                <Avatar icon={<UserOutlined />} />
-                <span className={styles["username"]}>
-                  {userStore.userInfo?.real_name ||
-                    userStore.userInfo?.username ||
-                    "管理员"}
-                </span>
-              </div>
-            </Dropdown>
-          </div>
-        </Header>
-        <Content className={styles["admin-content"]}>{children}</Content>
-      </Layout>
-    </Layout>
+        {children}
+      </ProLayout>
+    </div>
   );
-});
+};
 
 export default AdminLayout;

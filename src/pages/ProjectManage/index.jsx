@@ -11,7 +11,7 @@ const { Divider } = StatisticCard;
 
 const data = new Array(10).fill({}).map(() => ({
   title: "项目名称",
-  actions: [<a key="run">复制</a>, <a key="delete">删除</a>],
+  actions: [<a key="delete">删除</a>],
   avatar:
     "https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg",
   content: (
@@ -24,13 +24,6 @@ const data = new Array(10).fill({}).map(() => ({
         }}
       />
       <Divider />
-      <StatisticCard
-        statistic={{
-          title: "标签类别",
-          value: 100,
-          status: "default",
-        }}
-      />
       <StatisticCard
         statistic={{
           title: "标签数",
