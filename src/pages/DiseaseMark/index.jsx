@@ -40,10 +40,6 @@ const DiseaseMark = () => {
   const [imageHeight, setImageHeight] = useState(0);
   const [undoStack, setUndoStack] = useState([]); // 撤销栈
   const [redoStack, setRedoStack] = useState([]); // 复原栈
-  const completeAnnotationCount = useMemo(
-    () => Object.keys(annotations || {}).length,
-    [annotations],
-  );
 
   // 引用
   const canvasRef = useRef(null);
@@ -178,17 +174,6 @@ const DiseaseMark = () => {
       }
     }
   };
-
-  // 监听当前图片索引变化
-  useEffect(() => {
-    if (imageList.length > 0) {
-      const currentImage = imageList[currentImageIndex];
-      setImageUrl(currentImage.url);
-      // 加载对应图片的标注
-      const imgAnnotations = annotations[currentImage.id] || [];
-      setCurrentAnnotations(imgAnnotations);
-    }
-  }, [currentImageIndex, imageList, annotations]);
 
   // 绘制标注
   const drawAnnotations = () => {
@@ -590,11 +575,11 @@ const DiseaseMark = () => {
 
     const currentImage = imageList[currentImageIndex];
 
-    // 保存当前图片的标注到annotations对象中
-    setAnnotations((prev) => ({
-      ...prev,
+    // TODO 保存当前图片的标注到annotations对象中
+    const newAnnotations = {
+      ...annotations,
       [currentImage.id]: currentAnnotations,
-    }));
+    };
 
     // 构建标注数据
     const annotationData = {
@@ -665,14 +650,7 @@ const DiseaseMark = () => {
         setUndoStack((prev) => [...prev, currentAnnotations]);
         // 清空复原栈，因为有了新操作
         setRedoStack([]);
-
-        const currentImage = imageList[currentImageIndex];
         setCurrentAnnotations([]);
-        // 更新annotations对象
-        setAnnotations((prev) => ({
-          ...prev,
-          [currentImage.id]: [],
-        }));
         setCurrentAnnotation({ x: 0, y: 0, width: 0, height: 0 });
         setPolygonPoints([]);
         setIsDrawing(false);
@@ -697,13 +675,6 @@ const DiseaseMark = () => {
           (anno) => anno.id !== id,
         );
         setCurrentAnnotations(updatedAnnotations);
-
-        // 更新annotations对象
-        const currentImage = imageList[currentImageIndex];
-        setAnnotations((prev) => ({
-          ...prev,
-          [currentImage.id]: updatedAnnotations,
-        }));
         message.success("标注已删除");
       },
     });
@@ -725,14 +696,6 @@ const DiseaseMark = () => {
     // 恢复到撤销前的状态
     setCurrentAnnotations(previousAnnotations);
 
-    // 更新annotations对象
-    const currentImage = imageList[currentImageIndex];
-
-    setAnnotations((prev) => ({
-      ...prev,
-      [currentImage.id]: previousAnnotations,
-    }));
-
     message.success("撤销成功");
   };
 
@@ -751,13 +714,6 @@ const DiseaseMark = () => {
     setRedoStack((prev) => prev.slice(0, -1));
     // 恢复到复原后的状态
     setCurrentAnnotations(nextAnnotations);
-
-    // 更新annotations对象
-    const currentImage = imageList[currentImageIndex];
-    setAnnotations((prev) => ({
-      ...prev,
-      [currentImage.id]: nextAnnotations,
-    }));
 
     message.success("复原成功");
   };
@@ -908,9 +864,7 @@ const DiseaseMark = () => {
       </div>
       <div className={styles.content}>
         <div className={styles.sidebar}>
-          <div className={styles.progress}>
-            进度：{completeAnnotationCount} / {imageList.length}
-          </div>
+          <div className={styles.progress}>进度：0 / {imageList.length}</div>
           <div className={styles.imageList}>
             {imageList.map((item, index) => (
               <div
