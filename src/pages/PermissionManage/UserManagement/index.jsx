@@ -30,7 +30,6 @@ const UserManagement = observer(() => {
   };
 
   const columns = getColumns({
-    role_id: userStore.userInfo?.role_id,
     handleDeleteUser,
     reload: handleReload,
   });
@@ -59,17 +58,17 @@ const UserManagement = observer(() => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        request={async (params) => {
-          const { current, ...rest } = params;
-          return getUsers({
-            page: current,
-            ...rest,
-          }).then((res) => ({
-            data: res?.data?.list || [],
-            page: res?.data?.page || 1,
-            total: res?.data?.total || 0,
-          }));
-        }}
+        // request={async (params) => {
+        //   const { current, ...rest } = params;
+        //   return getUsers({
+        //     page: current,
+        //     ...rest,
+        //   }).then((res) => ({
+        //     data: res?.data?.list || [],
+        //     page: res?.data?.page || 1,
+        //     total: res?.data?.total || 0,
+        //   }));
+        // }}
         rowKey="_id"
         search={{
           labelWidth: "auto",

@@ -746,37 +746,39 @@ const DiseaseMark = () => {
     const img = imageRef.current;
 
     if (canvas && container && img) {
-      // 设置Canvas尺寸为容器尺寸
-      const rect = container.getBoundingClientRect();
-      const newSize = {
-        width: Math.max(800, rect.width), // 减去padding
-        height: Math.max(600, rect.height),
-      };
+      img.addEventListener("load", () => {
+        // 设置Canvas尺寸为容器尺寸
+        const rect = container.getBoundingClientRect();
+        const newSize = {
+          width: Math.max(800, rect.width), // 减去padding
+          height: Math.max(600, rect.height),
+        };
 
-      setCanvasSize(newSize);
-      setImageWidth(img.width);
-      setImageHeight(img.height);
+        setCanvasSize(newSize);
+        setImageWidth(img.width);
+        setImageHeight(img.height);
 
-      // 计算适合的初始缩放比例，确保图片能完整显示在Canvas中
-      const containerWidth = newSize.width;
-      const containerHeight = newSize.height;
-      const imgWidth = img.width;
-      const imgHeight = img.height;
+        // 计算适合的初始缩放比例，确保图片能完整显示在Canvas中
+        const containerWidth = newSize.width;
+        const containerHeight = newSize.height;
+        const imgWidth = img.width;
+        const imgHeight = img.height;
 
-      // 计算宽高缩放比例
-      const scaleX = containerWidth / imgWidth;
-      const scaleY = containerHeight / imgHeight;
+        // 计算宽高缩放比例
+        const scaleX = containerWidth / imgWidth;
+        const scaleY = containerHeight / imgHeight;
 
-      // 使用较小的缩放比例，确保图片完整显示
-      const initialScale = Math.min(scaleX, scaleY) * 100;
+        // 使用较小的缩放比例，确保图片完整显示
+        const initialScale = Math.min(scaleX, scaleY) * 100;
 
-      // 如果图片比容器小，则保持100%缩放
-      setZoom(Math.min(initialScale, 100));
+        // 如果图片比容器小，则保持100%缩放
+        setZoom(Math.min(initialScale, 100));
 
-      // 设置Canvas高清显示
-      setupHighDpiCanvas(canvas, newSize.width, newSize.height);
+        // 设置Canvas高清显示
+        setupHighDpiCanvas(canvas, newSize.width, newSize.height);
 
-      drawAnnotations();
+        drawAnnotations();
+      });
     }
   }, [imageUrl]);
 

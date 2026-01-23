@@ -1,73 +1,13 @@
 import {
   ModalForm,
-  ProFormDependency,
   ProFormSelect,
   ProFormText,
 } from "@ant-design/pro-components";
 import { Form, message } from "antd";
-import { useMemo } from "react";
 import { addUser, updateUser } from "../../../service/userService";
-import { getTenants } from "../../../service/tenantService";
-import { getDepartments } from "../../../service/departmentService";
-import userStore from "../../../store/userStore";
-import { ROLE_ID, ROLE_NAME_MAP } from "../../../constants/role";
 
 const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
   const [form] = Form.useForm();
-  const roles = useMemo(() => {
-    const currentRole = userStore.userInfo?.role_id;
-    const roles = [];
-
-    // 超级管理员可以创建所有角色
-    if (currentRole === ROLE_ID.SUPER_ADMIN) {
-      roles.push(
-        {
-          value: ROLE_ID.TENANT_ADMIN,
-          label: ROLE_NAME_MAP[ROLE_ID.TENANT_ADMIN],
-        },
-        {
-          value: ROLE_ID.DEPARTMENT_ADMIN,
-          label: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
-        },
-        {
-          value: ROLE_ID.REGULAR_USER,
-          label: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
-        }
-      );
-    }
-    // 租户管理员可以创建部门管理员和普通用户
-    else if (currentRole === ROLE_ID.TENANT_ADMIN) {
-      roles.push(
-        {
-          value: ROLE_ID.TENANT_ADMIN,
-          label: ROLE_NAME_MAP[ROLE_ID.TENANT_ADMIN],
-        },
-        {
-          value: ROLE_ID.DEPARTMENT_ADMIN,
-          label: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
-        },
-        {
-          value: ROLE_ID.REGULAR_USER,
-          label: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
-        }
-      );
-    }
-    // 部门管理员只能创建普通用户
-    else if (currentRole === ROLE_ID.DEPARTMENT_ADMIN) {
-      roles.push(
-        {
-          value: ROLE_ID.DEPARTMENT_ADMIN,
-          label: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
-        },
-        {
-          value: ROLE_ID.REGULAR_USER,
-          label: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
-        }
-      );
-    }
-
-    return roles;
-  }, [userStore.userInfo?.role_id]);
 
   return (
     <ModalForm
@@ -111,6 +51,24 @@ const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
         name="password"
         label="密码"
         rules={[{ required: true, message: "请输入密码" }]}
+        hasFeedback
+      />
+      <ProFormText.Password
+        dependencies={["password"]}
+        name="confirmPassword"
+        label="确认密码"
+        rules={[
+          { required: true, message: "请再次输入密码" },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error("两次输入的密码不一致!"));
+            },
+          }),
+        ]}
+        hasFeedback
       />
       <ProFormText
         name="email"
@@ -125,53 +83,39 @@ const AddUserModal = ({ onFinish, trigger, id, initialValues }) => {
         label="手机号"
         rules={[{ required: true, message: "请输入手机号" }]}
       />
-      {userStore.userInfo?.role_id === ROLE_ID.SUPER_ADMIN && (
-        <ProFormSelect
-          name="tenant_id"
-          label="所属租户"
-          rules={[{ required: true, message: "请选择所属租户" }]}
-          params={{ page: 1, pageSize: 999 }}
-          request={async (params) => {
-            return getTenants(params).then(
-              (res) =>
-                res.data?.list?.map?.((item) => ({
-                  label: item.name,
-                  value: item._id,
-                })) || []
-            );
-          }}
-        />
-      )}
-      {userStore.userInfo?.role_id <= ROLE_ID.TENANT_ADMIN && (
-        <ProFormDependency name={["tenant_id", "role_id"]}>
-          {({ tenant_id, role_id }) => {
-            if (role_id <= ROLE_ID.TENANT_ADMIN) return null;
-            form.resetFields(["department_id"]);
-            return (
-              <ProFormSelect
-                name="department_id"
-                label="所属部门"
-                rules={[{ required: true, message: "请选择所属部门" }]}
-                params={{ tenant_id, page: 1, pageSize: 999 }}
-                request={async (params) => {
-                  return getDepartments(params).then(
-                    (res) =>
-                      res.data?.list?.map?.((item) => ({
-                        label: item.name,
-                        value: item._id,
-                      })) || []
-                  );
-                }}
-              />
-            );
-          }}
-        </ProFormDependency>
-      )}
+      <ProFormSelect
+        name="specialty"
+        label="专业"
+        rules={[{ required: true, message: "请选择专业" }]}
+        options={[
+          { label: "工务", value: "workforce" },
+          { label: "电务", value: "electrical" },
+          { label: "供电", value: "power" },
+        ]}
+      />
       <ProFormSelect
         name="role_id"
         label="角色"
         rules={[{ required: true, message: "请选择角色" }]}
-        options={roles}
+        options={[
+          { label: "管理员", value: "admin" },
+          { label: "普通用户", value: "user" },
+        ]}
+      />
+      <ProFormSelect
+        name="tenant_id"
+        label="所属租户"
+        rules={[{ required: true, message: "请选择所属租户" }]}
+        params={{ page: 1, pageSize: 999 }}
+        // request={async (params) => {
+        //   return getTenants(params).then(
+        //     (res) =>
+        //       res.data?.list?.map?.((item) => ({
+        //         label: item.name,
+        //         value: item._id,
+        //       })) || [],
+        //   );
+        // }}
       />
     </ModalForm>
   );

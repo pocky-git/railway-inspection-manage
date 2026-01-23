@@ -1,0 +1,51 @@
+import { Form } from "antd";
+import {
+  ModalForm,
+  ProFormText,
+  ProFormSelect,
+} from "@ant-design/pro-components";
+
+// 模型类型选项
+const modelTypeOptions = [
+  { label: "YOLO", value: "yolo" },
+  { label: "SAM", value: "sam" },
+];
+
+const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
+  const [form] = Form.useForm();
+
+  // 提交表单
+  const handleFinish = async (values) => {
+    onFinish?.();
+  };
+
+  return (
+    <ModalForm
+      title="新建模型"
+      trigger={trigger}
+      form={form}
+      autoFocusFirstInput
+      onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
+      modalProps={{
+        destroyOnClose: true,
+        width: 500,
+      }}
+      onFinish={handleFinish}
+    >
+      <ProFormText
+        name="modelName"
+        label="模型名称"
+        rules={[{ required: true, message: "请输入模型名称" }]}
+      />
+
+      <ProFormSelect
+        name="modelType"
+        label="模型类型"
+        rules={[{ required: true, message: "请选择模型类型" }]}
+        options={modelTypeOptions}
+      />
+    </ModalForm>
+  );
+};
+
+export default AddModelTrainingModal;

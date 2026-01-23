@@ -1,9 +1,9 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { ProTable, PageContainer } from "@ant-design/pro-components";
-import { Button, message } from "antd";
+import { Button, message, Modal } from "antd";
 import { useRef } from "react";
 import { observer } from "mobx-react-lite";
-import AddModelTrainingModal from "./AddModelTrainingModal";
+import AddModelModal from "./AddModelModal";
 import { getColumns } from "./columns";
 
 const ModelTraining = observer(() => {
@@ -13,7 +13,12 @@ const ModelTraining = observer(() => {
   const getModelTrainings = async (params) => {
     // 这里应该调用实际的API，现在返回模拟数据
     return {
-      data: [],
+      data: [
+        {
+          modelName: "工务模型",
+          modelType: "YOLO",
+        },
+      ],
       page: params.page || 1,
       total: 0,
     };
@@ -21,9 +26,16 @@ const ModelTraining = observer(() => {
 
   // 删除模型训练
   const handleDeleteModelTraining = async (id) => {
-    // 这里应该调用实际的API，现在模拟删除
-    message.success("模型训练已删除");
-    actionRef.current?.reload?.();
+    Modal.confirm({
+      title: "确认删除该模型吗？",
+      okText: "确认",
+      okType: "danger",
+      onOk: () => {
+        // 这里应该调用实际的API，现在模拟删除
+        message.success("模型已删除");
+        actionRef.current?.reload?.();
+      },
+    });
   };
 
   // 获取模型训练列表列配置
@@ -69,10 +81,10 @@ const ModelTraining = observer(() => {
           labelWidth: "auto",
         }}
         toolBarRender={() => [
-          <AddModelTrainingModal
+          <AddModelModal
             trigger={
               <Button type="primary" icon={<PlusOutlined />}>
-                训练模型
+                新建模型
               </Button>
             }
             onFinish={() => actionRef.current?.reload?.()}

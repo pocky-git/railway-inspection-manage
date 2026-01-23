@@ -1,18 +1,10 @@
 import { Form } from "antd";
 import {
   ModalForm,
-  ProFormText,
   ProFormSelect,
   ProFormDigit,
   ProFormCheckbox,
 } from "@ant-design/pro-components";
-
-// 模型类型选项
-const modelTypeOptions = [
-  { label: "目标检测", value: "object_detection" },
-  { label: "图像分类", value: "image_classification" },
-  { label: "语义分割", value: "semantic_segmentation" },
-];
 
 // 数据增强选项
 const dataAugmentationOptions = [
@@ -34,7 +26,7 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
 
   return (
     <ModalForm
-      title="新建模型训练"
+      title="开始训练"
       trigger={trigger}
       form={form}
       autoFocusFirstInput
@@ -45,19 +37,6 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
       }}
       onFinish={handleFinish}
     >
-      <ProFormText
-        name="modelName"
-        label="模型名称"
-        rules={[{ required: true, message: "请输入模型名称" }]}
-      />
-
-      <ProFormSelect
-        name="modelType"
-        label="模型类型"
-        rules={[{ required: true, message: "请选择模型类型" }]}
-        options={modelTypeOptions}
-      />
-
       <ProFormSelect
         name="project"
         label="项目选择"
@@ -72,27 +51,21 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
         name="learningRate"
         label="学习率"
         rules={[{ required: true, message: "请输入学习率" }]}
-        min={0.00001}
-        max={1}
-        step={0.0001}
+        min={0}
       />
 
       <ProFormDigit
         name="batchSize"
         label="批次大小"
         rules={[{ required: true, message: "请输入批次大小" }]}
-        min={1}
-        max={256}
-        step={1}
+        min={0}
       />
 
       <ProFormDigit
         name="epochs"
         label="迭代次数"
         rules={[{ required: true, message: "请输入迭代次数" }]}
-        min={1}
-        max={1000}
-        step={1}
+        min={0}
       />
 
       <ProFormCheckbox.Group

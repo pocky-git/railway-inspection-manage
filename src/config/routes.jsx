@@ -12,14 +12,14 @@ const ProjectManage = lazy(() => import("../pages/ProjectManage"));
 const DiseaseMark = lazy(() => import("../pages/DiseaseMark"));
 const ModelTraining = lazy(() => import("../pages/ModelTraining"));
 const DefectAnalysis = lazy(() => import("../pages/DefectAnalysis"));
-const TenantManagement = lazy(() =>
-  import("../pages/PermissionManage/TenantManagement")
+const TenantManagement = lazy(
+  () => import("../pages/PermissionManage/TenantManagement"),
 );
-const DepartmentManagement = lazy(() =>
-  import("../pages/PermissionManage/DepartmentManagement")
+const DepartmentManagement = lazy(
+  () => import("../pages/PermissionManage/DepartmentManagement"),
 );
-const UserManagement = lazy(() =>
-  import("../pages/PermissionManage/UserManagement")
+const UserManagement = lazy(
+  () => import("../pages/PermissionManage/UserManagement"),
 );
 
 export const routes = [
@@ -64,12 +64,12 @@ export const routes = [
         component: <TenantManagement />,
         name: "租户管理",
       },
-      {
-        key: "/permission-manage/department-manage",
-        path: "/permission-manage/department-manage",
-        component: <DepartmentManagement />,
-        name: "部门管理",
-      },
+      // {
+      //   key: "/permission-manage/department-manage",
+      //   path: "/permission-manage/department-manage",
+      //   component: <DepartmentManagement />,
+      //   name: "部门管理",
+      // },
       {
         key: "/permission-manage/user-manage",
         path: "/permission-manage/user-manage",

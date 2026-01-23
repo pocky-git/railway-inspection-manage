@@ -57,17 +57,17 @@ const TenantManagement = observer(() => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        request={async (params) => {
-          const { current, ...rest } = params;
-          return getTenants({
-            page: current,
-            ...rest,
-          }).then((res) => ({
-            data: res?.data?.list || [],
-            page: res?.data?.page || 1,
-            total: res?.data?.total || 0,
-          }));
-        }}
+        // request={async (params) => {
+        //   const { current, ...rest } = params;
+        //   return getTenants({
+        //     page: current,
+        //     ...rest,
+        //   }).then((res) => ({
+        //     data: res?.data?.list || [],
+        //     page: res?.data?.page || 1,
+        //     total: res?.data?.total || 0,
+        //   }));
+        // }}
         rowKey="_id"
         search={{
           labelWidth: "auto",

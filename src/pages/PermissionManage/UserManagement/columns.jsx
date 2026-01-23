@@ -1,21 +1,18 @@
 import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { Button, Popconfirm } from "antd";
-import { ROLE_NAME_MAP, ROLE_ID } from "../../../constants/role";
-import { getTenants } from "../../../service/tenantService";
-import { getDepartments } from "../../../service/departmentService";
 import AddUserModal from "./AddUserModal";
 
-export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
+export const getColumns = ({ handleDeleteUser, reload }) => {
   return [
-    {
-      title: "用户名称",
-      dataIndex: "username",
-      key: "username",
-    },
     {
       title: "真实姓名",
       dataIndex: "real_name",
       key: "real_name",
+    },
+    {
+      title: "用户名称",
+      dataIndex: "username",
+      key: "username",
     },
     {
       title: "邮箱",
@@ -30,55 +27,20 @@ export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
       search: false,
     },
     {
-      title: "所属租户",
-      dataIndex: "tenant_name",
-      key: "tenant_id",
-      render: (tenant_name) => tenant_name || "-",
+      title: "专业",
+      dataIndex: "specialty",
+      key: "specialty",
       valueType: "select",
-      search: role_id === ROLE_ID.SUPER_ADMIN,
-      fieldProps: {
-        showSearch: true,
-      },
-      request: async () => {
-        if (role_id !== ROLE_ID.SUPER_ADMIN) {
-          return [];
-        }
-        return getTenants({
-          page: 1,
-          pageSize: 999,
-        }).then(
-          (res) =>
-            res.data?.list?.map?.((item) => ({
-              label: item.name,
-              value: item._id,
-            })) || []
-        );
-      },
-    },
-    {
-      title: "所属部门",
-      dataIndex: "department_name",
-      key: "department_id",
-      render: (department_name) => department_name || "-",
-      valueType: "select",
-      search: role_id <= ROLE_ID.TENANT_ADMIN,
-      fieldProps: {
-        showSearch: true,
-      },
-      request: async () => {
-        if (role_id > ROLE_ID.TENANT_ADMIN) {
-          return [];
-        }
-        return getDepartments({
-          page: 1,
-          pageSize: 999,
-        }).then(
-          (res) =>
-            res.data?.list?.map?.((item) => ({
-              label: item.name,
-              value: item._id,
-            })) || []
-        );
+      valueEnum: {
+        workforce: {
+          text: "工务",
+        },
+        electrical: {
+          text: "电务",
+        },
+        power: {
+          text: "供电",
+        },
       },
     },
     {
@@ -87,35 +49,35 @@ export const getColumns = ({ role_id, handleDeleteUser, reload }) => {
       key: "role_id",
       valueType: "select",
       valueEnum: {
-        [ROLE_ID.SUPER_ADMIN]: {
-          text: ROLE_NAME_MAP[ROLE_ID.SUPER_ADMIN],
+        admin: {
+          text: "管理员",
         },
-        [ROLE_ID.TENANT_ADMIN]: {
-          text: ROLE_NAME_MAP[ROLE_ID.TENANT_ADMIN],
-        },
-        [ROLE_ID.DEPARTMENT_ADMIN]: {
-          text: ROLE_NAME_MAP[ROLE_ID.DEPARTMENT_ADMIN],
-        },
-        [ROLE_ID.REGULAR_USER]: {
-          text: ROLE_NAME_MAP[ROLE_ID.REGULAR_USER],
+        regular_user: {
+          text: "普通用户",
         },
       },
     },
     {
-      title: "状态",
-      dataIndex: "status",
-      key: "status",
-      valueEnum: {
-        true: {
-          text: "启用",
-          status: "Success",
-        },
-        false: {
-          text: "禁用",
-          status: "Error",
-        },
+      title: "所属租户",
+      dataIndex: "tenant_name",
+      key: "tenant_id",
+      render: (tenant_name) => tenant_name || "-",
+      valueType: "select",
+      fieldProps: {
+        showSearch: true,
       },
-      search: false,
+      request: async () => {
+        // return getTenants({
+        //   page: 1,
+        //   pageSize: 999,
+        // }).then(
+        //   (res) =>
+        //     res.data?.list?.map?.((item) => ({
+        //       label: item.name,
+        //       value: item._id,
+        //     })) || [],
+        // );
+      },
     },
     {
       title: "操作",

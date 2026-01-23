@@ -1,4 +1,5 @@
-import { Button } from "antd";
+import { Space } from "antd";
+import TrainingModal from "./TrainingModal";
 
 export const getColumns = ({ handleDeleteModelTraining }) => {
   return [
@@ -6,62 +7,43 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
       title: "模型名称",
       dataIndex: "modelName",
       key: "modelName",
+      width: 320,
     },
     {
       title: "模型类型",
       dataIndex: "modelType",
       key: "modelType",
       valueType: "select",
-    },
-    {
-      title: "项目",
-      dataIndex: "projectName",
-      key: "projectName",
-      valueType: "select",
-      fieldProps: {
-        showSearch: true,
-      },
-      request: async () => {
-        return [];
-      },
-    },
-    {
-      title: "学习率",
-      dataIndex: "learningRate",
-      key: "learningRate",
-      search: false,
-    },
-    {
-      title: "批次大小",
-      dataIndex: "batchSize",
-      key: "batchSize",
-      search: false,
-    },
-    {
-      title: "迭代次数",
-      dataIndex: "epochs",
-      key: "epochs",
-      search: false,
+      width: 320,
     },
     {
       title: "创建时间",
       dataIndex: "createdAt",
       key: "createdAt",
+      width: 320,
       search: false,
     },
     {
       title: "操作",
       key: "action",
       valueType: "option",
-      render: (_, record) => [
-        <Button
-          type="link"
-          danger
-          onClick={() => handleDeleteModelTraining(record._id)}
-        >
-          删除
-        </Button>,
-      ],
+      render: (_, record) => (
+        <Space>
+          <TrainingModal
+            trigger={
+              <a style={{ color: "#1677ff" }} type="link">
+                开始训练
+              </a>
+            }
+          />
+          <a
+            style={{ color: "#ff4d4f" }}
+            onClick={() => handleDeleteModelTraining(record._id)}
+          >
+            删除
+          </a>
+        </Space>
+      ),
     },
   ];
 };
