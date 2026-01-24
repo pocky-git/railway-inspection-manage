@@ -1027,7 +1027,6 @@ const DiseaseMark = () => {
               style={{
                 cursor: "crosshair",
                 display: "block",
-                transition: "width 0.2s ease, height 0.2s ease",
               }}
               onMouseDown={(e) => {
                 handleMouseDown(e);
