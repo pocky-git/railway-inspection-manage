@@ -1,27 +1,34 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { ProTable, PageContainer } from "@ant-design/pro-components";
-import { Button, message } from "antd";
+import { Button, Modal } from "antd";
 import { useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { getTenants, deleteTenant } from "../../../service/tenantService";
 import { getColumns } from "./columns";
 import AddTenantModal from "./AddTenantModal";
 
 const TenantManagement = observer(() => {
   const actionRef = useRef();
 
+  const getTenants = async () => {
+    return [
+      {
+        id: 1,
+        name: "租户1",
+        createAt: "2026-01-01",
+      },
+    ];
+  };
+
   // 删除租户
   const handleDeleteTenant = async (id) => {
-    try {
-      const response = await deleteTenant(id);
-
-      if (response.code === 200) {
-        message.success("租户删除成功");
-        actionRef.current?.reload?.();
-      }
-    } catch (error) {
-      console.error("删除租户失败:", error);
-    }
+    Modal.confirm({
+      title: "确认删除该租户吗？",
+      okText: "确认",
+      okType: "danger",
+      onOk: async () => {
+        handleReload();
+      },
+    });
   };
 
   const handleReload = () => {
@@ -41,11 +48,9 @@ const TenantManagement = observer(() => {
         breadcrumb: {
           items: [
             {
-              path: "",
               title: "租户管理",
             },
             {
-              path: "",
               title: "列表",
             },
           ],
@@ -57,18 +62,18 @@ const TenantManagement = observer(() => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        // request={async (params) => {
-        //   const { current, ...rest } = params;
-        //   return getTenants({
-        //     page: current,
-        //     ...rest,
-        //   }).then((res) => ({
-        //     data: res?.data?.list || [],
-        //     page: res?.data?.page || 1,
-        //     total: res?.data?.total || 0,
-        //   }));
-        // }}
-        rowKey="_id"
+        request={async (params) => {
+          const { current, ...rest } = params;
+          return getTenants({
+            page: current,
+            ...rest,
+          }).then((res) => ({
+            data: res,
+            page: 1,
+            total: 1,
+          }));
+        }}
+        rowKey="id"
         search={{
           labelWidth: "auto",
         }}

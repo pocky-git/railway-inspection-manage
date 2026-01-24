@@ -69,7 +69,7 @@ const AdminLayout = ({ children }) => {
         menuItemRender={(item, dom) => (
           <div onClick={() => navigate(item.path)}>{dom}</div>
         )}
-        layout="mix"
+        // layout="mix"
         contentStyle={
           location.pathname === "/disease-mark"
             ? {

@@ -1,24 +1,34 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Input, message, List, Tag, Badge, Button, Tooltip, Modal } from "antd";
 import {
-  SaveOutlined,
-  ClearOutlined,
-  UndoOutlined,
-  RedoOutlined,
-} from "@ant-design/icons";
+  Input,
+  message,
+  List,
+  Tag,
+  Badge,
+  Button,
+  Tooltip,
+  Modal,
+  Upload,
+  Space,
+  Slider,
+} from "antd";
+import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
+import SelectProjectModal from "./SelectProjectModal";
 import styles from "./index.module.less";
 import img from "./a.jpg";
 import img2 from "./c.jpg";
 
+const mockImageList = [
+  { id: 1, url: img, name: "图片1" },
+  { id: 2, url: img2, name: "图片2" },
+];
+
 const DiseaseMark = () => {
   // 状态管理
-  const [imageList, setImageList] = useState([
-    { id: 1, url: img, name: "图片1" },
-    { id: 2, url: img2, name: "图片2" },
-  ]);
+  const [imageList, setImageList] = useState(mockImageList);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imageUrl, setImageUrl] = useState(img);
+  const [imageUrl, setImageUrl] = useState(mockImageList[0].url);
   const [annotations, setAnnotations] = useState({}); // 改为对象，key为图片id
   const [currentAnnotations, setCurrentAnnotations] = useState([]); // 当前图片的标注
   const [annotationType, setAnnotationType] = useState(""); // rectangle 或 polygon
@@ -40,6 +50,12 @@ const DiseaseMark = () => {
   const [imageHeight, setImageHeight] = useState(0);
   const [undoStack, setUndoStack] = useState([]); // 撤销栈
   const [redoStack, setRedoStack] = useState([]); // 复原栈
+  const [annotationMethod, setAnnotationMethod] = useState(1);
+
+  const completeAnnotationCount = useMemo(
+    () => Object.keys(annotations).length,
+    [annotations],
+  );
 
   // 引用
   const canvasRef = useRef(null);
@@ -98,7 +114,6 @@ const DiseaseMark = () => {
     // 切换图片时重置撤销和复原栈
     setUndoStack([]);
     setRedoStack([]);
-    // 初始缩放将由imageUrl变化的useEffect处理
   };
 
   // 鼠标按下事件 - 开始拖拽
@@ -739,6 +754,80 @@ const DiseaseMark = () => {
     }
   };
 
+  const handleAnnotationMethodChange = (value) => {
+    // TODO 需要换成请求api获取annotions
+    let newAnnotations = [];
+    if (value === 2) {
+      newAnnotations = {
+        1: [
+          {
+            id: 1769245863210,
+            shape: "polygon",
+            points: [
+              {
+                x: 114.28571428571429,
+                y: 90,
+              },
+              {
+                x: 368.5714285714286,
+                y: 130,
+              },
+              {
+                x: 232.85714285714286,
+                y: 251.42857142857144,
+              },
+              {
+                x: 114.28571428571429,
+                y: 185.71428571428572,
+              },
+            ],
+            type: "other",
+            name: "无备注",
+            createdAt: "2026-01-24T09:11:03.210Z",
+            boundingBox: {
+              x: 114.28571428571429,
+              y: 90,
+              width: 254.28571428571433,
+              height: 161.42857142857144,
+            },
+            relativePoints: [
+              {
+                x: 0.2285714285714286,
+                y: 0.18,
+              },
+              {
+                x: 0.7371428571428572,
+                y: 0.26,
+              },
+              {
+                x: 0.46571428571428575,
+                y: 0.5028571428571429,
+              },
+              {
+                x: 0.2285714285714286,
+                y: 0.37142857142857144,
+              },
+            ],
+          },
+        ],
+      };
+    } else {
+      newAnnotations = {};
+    }
+    setAnnotationMethod(value);
+    setAnnotations(newAnnotations);
+
+    const currentImage = imageList[currentImageIndex];
+    if (!currentImage) return;
+    const imgAnnotations = newAnnotations[currentImage.id] || [];
+    setCurrentAnnotations(imgAnnotations);
+    // 重置图片偏移
+    setImageOffset({ x: 0, y: 0 });
+    // 切换图片时重置撤销和复原栈
+    setUndoStack([]);
+    setRedoStack([]);
+  };
+
   // 图片加载完成后设置Canvas尺寸
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -836,37 +925,63 @@ const DiseaseMark = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <div className={styles.annotationType}>
-          <Tooltip placement="bottom" title="矩形标注">
-            <div
-              className={`iconfont icon-rectangle ${
-                annotationType === "rectangle" ? "active" : ""
-              }`}
-              onClick={() => setAnnotationType("rectangle")}
-            />
-          </Tooltip>
-          <Tooltip placement="bottom" title="多边形标注">
-            <div
-              className={`iconfont icon-polygon ${
-                annotationType === "polygon" ? "active" : ""
-              }`}
-              onClick={() => setAnnotationType("polygon")}
-            />
-          </Tooltip>
+        <div className={styles.headerLeft}>
+          <div className={styles.annotationType}>
+            <Tooltip placement="bottom" title="矩形标注">
+              <div
+                className={`iconfont icon-rectangle ${
+                  annotationType === "rectangle" ? "active" : ""
+                }`}
+                onClick={() => setAnnotationType("rectangle")}
+              />
+            </Tooltip>
+            <Tooltip placement="bottom" title="多边形标注">
+              <div
+                className={`iconfont icon-polygon ${
+                  annotationType === "polygon" ? "active" : ""
+                }`}
+                onClick={() => setAnnotationType("polygon")}
+              />
+            </Tooltip>
+          </div>
+          <div className={styles.line} />
+          <div className={styles.redoAndUndo}>
+            <Tooltip placement="bottom" title="撤销">
+              <UndoOutlined className={styles.icon} onClick={handleUndo} />
+            </Tooltip>
+            <Tooltip placement="bottom" title="复原">
+              <RedoOutlined className={styles.icon} onClick={handleRedo} />
+            </Tooltip>
+          </div>
         </div>
-        <div className={styles.line} />
-        <div className={styles.redoAndUndo}>
-          <Tooltip placement="bottom" title="撤销">
-            <UndoOutlined className={styles.icon} onClick={handleUndo} />
-          </Tooltip>
-          <Tooltip placement="bottom" title="复原">
-            <RedoOutlined className={styles.icon} onClick={handleRedo} />
-          </Tooltip>
+        <Tag.CheckableTagGroup
+          className={styles.annotationMethod}
+          options={[
+            { label: "手动标注", value: 1 },
+            { label: "YOLO自动检测", value: 2 },
+            { label: "SAM智能分割", value: 3 },
+            { label: "MMSeg语义分割", value: 4 },
+          ]}
+          value={annotationMethod}
+          onChange={handleAnnotationMethodChange}
+        />
+        <div className={styles.headerRight}>
+          <Space size={18}>
+            <Upload>
+              <a style={{ color: "#1677ff" }}>本地上传</a>
+            </Upload>
+            <SelectProjectModal
+              onFinish={() => {}}
+              trigger={<a style={{ color: "#1677ff" }}>导入项目</a>}
+            />
+          </Space>
         </div>
       </div>
       <div className={styles.content}>
         <div className={styles.sidebar}>
-          <div className={styles.progress}>进度：0 / {imageList.length}</div>
+          <div className={styles.progress}>
+            进度：{completeAnnotationCount} / {imageList.length}
+          </div>
           <div className={styles.imageList}>
             {imageList.map((item, index) => (
               <div
@@ -875,7 +990,7 @@ const DiseaseMark = () => {
                 style={{
                   border:
                     index === currentImageIndex
-                      ? "2px solid #3d75c3"
+                      ? "2px solid #1677ff"
                       : "2px solid transparent",
                 }}
                 onClick={() => handleImageChange(index)}
@@ -954,17 +1069,38 @@ const DiseaseMark = () => {
             ))}
           </div>
           <div className={styles.paramItem}>
+            <div className={styles.paramLabel}>置信度</div>
+            <Slider
+              className={styles.slider}
+              defaultValue={85}
+              tooltip={{ open: true, formatter: (value) => `${value}%` }}
+              marks={{
+                0: <span className={styles.sliderLabel}>0%</span>,
+                100: <span className={styles.sliderLabel}>100%</span>,
+              }}
+            />
+          </div>
+          <div className={styles.paramItem}>
             <div className={styles.paramLabel}>标注备注</div>
             <Input.TextArea
               className={styles.textarea}
-              placeholder="输入标注备注"
+              placeholder="输入病害详细描述、位置信息等..."
               value={diseaseRemark}
               onChange={(e) => setDiseaseRemark(e.target.value)}
               maxLength={500}
             />
           </div>
           <div className={`${styles.paramItem} ${styles.markList}`}>
-            <div className={styles.paramLabel}>标注列表</div>
+            <div className={styles.paramLabel}>
+              标注列表
+              <a
+                style={{ color: "#ff4d4f" }}
+                className={styles.markListItemDeleteBtn}
+                onClick={handleClear}
+              >
+                清空
+              </a>
+            </div>
             <div className={styles.markListWrapper}>
               {!!currentAnnotations?.length && (
                 <List
@@ -1023,15 +1159,6 @@ const DiseaseMark = () => {
           style={{ marginLeft: 8 }}
         >
           保存标注
-        </Button>
-        <Button
-          color="danger"
-          variant="solid"
-          icon={<ClearOutlined />}
-          onClick={handleClear}
-          style={{ marginLeft: 8 }}
-        >
-          清除所有
         </Button>
       </div>
     </div>

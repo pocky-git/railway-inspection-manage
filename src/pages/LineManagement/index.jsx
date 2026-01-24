@@ -4,45 +4,30 @@ import { Button, Modal } from "antd";
 import { useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { getColumns } from "./columns";
-import AddUserModal from "./AddUserModal";
+import AddLineModal from "./AddLineModal";
 
-const UserManagement = observer(() => {
+const LineManagement = observer(() => {
   const actionRef = useRef();
 
-  const getUsers = async () => {
+  const getLine = async () => {
     return [
       {
-        id: "1",
-        real_name: "张三",
-        username: "user1",
-        phone: "13800000000",
-        email: "zhangsan@example.com",
-        role_id: "admin",
-        specialty: "workforce",
-        tenant_name: "广州铁路局",
-        createAt: "2026-01-01",
-      },
-      {
-        id: "2",
-        real_name: "李四",
-        username: "user2",
-        phone: "13800000000",
-        email: "lisi@example.com",
-        role_id: "regular_user",
-        specialty: "workforce",
-        tenant_name: "广州铁路局",
-        createAt: "2026-01-02",
+        id: 1,
+        name: "K100-K200",
+        createdAt: "2026-01-01",
       },
     ];
   };
 
-  // 删除用户
-  const handleDeleteUser = async (id) => {
+  // 删除线路
+  const handleDeleteLine = async (id) => {
     Modal.confirm({
-      title: "确定要删除这个用户吗？",
-      okText: "确定",
+      title: "确认删除该线路吗？",
+      okText: "确认",
       okType: "danger",
-      onOk: async () => {},
+      onOk: async () => {
+        handleReload();
+      },
     });
   };
 
@@ -51,23 +36,21 @@ const UserManagement = observer(() => {
   };
 
   const columns = getColumns({
-    handleDeleteUser,
+    handleDeleteLine,
     reload: handleReload,
   });
 
   return (
     <PageContainer
       header={{
-        title: "用户管理",
+        title: "线路管理",
         ghost: true,
         breadcrumb: {
           items: [
             {
-              path: "",
-              title: "用户管理",
+              title: "线路管理",
             },
             {
-              path: "",
               title: "列表",
             },
           ],
@@ -81,7 +64,7 @@ const UserManagement = observer(() => {
         cardBordered
         request={async (params) => {
           const { current, ...rest } = params;
-          return getUsers({
+          return getLine({
             page: current,
             ...rest,
           }).then((res) => ({
@@ -90,18 +73,18 @@ const UserManagement = observer(() => {
             total: 1,
           }));
         }}
-        rowKey="id"
+        rowKey="_id"
         search={{
           labelWidth: "auto",
         }}
         toolBarRender={() => [
-          <AddUserModal
-            onFinish={() => actionRef.current?.reload?.()}
+          <AddLineModal
             trigger={
-              <Button key="button" icon={<PlusOutlined />} type="primary">
-                添加用户
+              <Button type="primary" icon={<PlusOutlined />}>
+                添加线路
               </Button>
             }
+            onFinish={() => actionRef.current?.reload?.()}
           />,
         ]}
       />
@@ -109,4 +92,4 @@ const UserManagement = observer(() => {
   );
 });
 
-export default UserManagement;
+export default LineManagement;

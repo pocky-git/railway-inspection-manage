@@ -1,5 +1,4 @@
-import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
-import { Button, Popconfirm } from "antd";
+import { Space, Popconfirm } from "antd";
 import AddUserModal from "./AddUserModal";
 
 export const getColumns = ({ handleDeleteUser, reload }) => {
@@ -80,20 +79,22 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
       },
     },
     {
+      title: "创建时间",
+      dataIndex: "createAt",
+      key: "createAt",
+      search: false,
+    },
+    {
       title: "操作",
       valueType: "option",
       key: "option",
       render: (_, record) => (
-        <>
+        <Space>
           <AddUserModal
             onFinish={reload}
             id={record._id}
             initialValues={record}
-            trigger={
-              <Button variant="text" color="primary" icon={<FormOutlined />}>
-                编辑
-              </Button>
-            }
+            trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
           />
           <Popconfirm
             title="确定要删除这个用户吗？"
@@ -103,11 +104,9 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
             okText="确定"
             cancelText="取消"
           >
-            <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
-            </Button>
+            <a style={{ color: "#ff4d4f" }}>删除</a>
           </Popconfirm>
-        </>
+        </Space>
       ),
     },
   ];

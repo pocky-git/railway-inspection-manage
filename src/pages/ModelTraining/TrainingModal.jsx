@@ -6,16 +6,6 @@ import {
   ProFormCheckbox,
 } from "@ant-design/pro-components";
 
-// 数据增强选项
-const dataAugmentationOptions = [
-  { label: "随机翻转", value: "random_flip" },
-  { label: "旋转±15度", value: "rotation" },
-  { label: "色彩抖动", value: "color_jitter" },
-  { label: "高斯噪声", value: "gaussian_noise" },
-  { label: "mosaic增强", value: "mosaic" },
-  { label: "随机裁剪", value: "random_crop" },
-];
-
 const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
   const [form] = Form.useForm();
 
@@ -38,9 +28,9 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
       onFinish={handleFinish}
     >
       <ProFormSelect
-        name="project"
-        label="项目选择"
-        rules={[{ required: true, message: "请选择项目" }]}
+        name="dataset"
+        label="数据集"
+        rules={[{ required: true, message: "请选择数据集" }]}
         params={{ page: 1, pageSize: 999 }}
         request={async (params) => {
           return [];
@@ -71,7 +61,26 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
       <ProFormCheckbox.Group
         name="dataAugmentation"
         label="数据增强"
-        options={dataAugmentationOptions}
+        valueEnum={{
+          random_flip: {
+            text: "随机翻转",
+          },
+          rotation: {
+            text: "旋转±15度",
+          },
+          color_jitter: {
+            text: "色彩抖动",
+          },
+          gaussian_noise: {
+            text: "高斯噪声",
+          },
+          mosaic: {
+            text: "mosaic增强",
+          },
+          random_crop: {
+            text: "随机裁剪",
+          },
+        }}
       />
     </ModalForm>
   );

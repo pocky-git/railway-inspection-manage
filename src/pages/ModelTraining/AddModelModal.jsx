@@ -5,13 +5,7 @@ import {
   ProFormSelect,
 } from "@ant-design/pro-components";
 
-// 模型类型选项
-const modelTypeOptions = [
-  { label: "YOLO", value: "yolo" },
-  { label: "SAM", value: "sam" },
-];
-
-const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
+const AddModelModal = ({ trigger, initialValues, onFinish }) => {
   const [form] = Form.useForm();
 
   // 提交表单
@@ -42,10 +36,17 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
         name="modelType"
         label="模型类型"
         rules={[{ required: true, message: "请选择模型类型" }]}
-        options={modelTypeOptions}
+        valueEnum={{
+          1: {
+            text: "YOLO",
+          },
+          2: {
+            text: "SAM",
+          },
+        }}
       />
     </ModalForm>
   );
 };
 
-export default AddModelTrainingModal;
+export default AddModelModal;

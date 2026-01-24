@@ -7,25 +7,26 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
       title: "模型名称",
       dataIndex: "modelName",
       key: "modelName",
-      width: 320,
+      width: 300,
     },
     {
       title: "模型类型",
       dataIndex: "modelType",
       key: "modelType",
       valueType: "select",
-      width: 320,
+      width: 300,
     },
     {
       title: "创建时间",
       dataIndex: "createdAt",
       key: "createdAt",
-      width: 320,
-      search: false,
+      valueType: "date",
+      width: 300,
     },
     {
       title: "操作",
       key: "action",
+      width: 120,
       valueType: "option",
       render: (_, record) => (
         <Space>

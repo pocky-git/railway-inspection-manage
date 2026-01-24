@@ -33,7 +33,7 @@ const AddProjectModal = ({ trigger, initialValues, onFinish }) => {
 
       <ProFormSelect
         name="specialty"
-        label="专业"
+        label="选择专业"
         rules={[{ required: true, message: "请选择专业" }]}
         options={[
           { label: "工务", value: "specialty1" },
@@ -43,13 +43,21 @@ const AddProjectModal = ({ trigger, initialValues, onFinish }) => {
       />
       <ProFormSelect
         name="line"
-        label="线路"
+        label="选择线路"
         rules={[{ required: true, message: "请选择线路" }]}
-        options={[
-          { label: "k100-k200", value: "line1" },
-          { label: "k200-k300", value: "line2" },
-          { label: "k300-k400", value: "line3" },
-        ]}
+        params={{ page: 1, pageSize: 999 }}
+        request={async (params) => {
+          return [
+            {
+              label: "K100-K200",
+              value: "K100-K200",
+            },
+            {
+              label: "K200-K300",
+              value: "K200-K300",
+            },
+          ];
+        }}
       />
     </ModalForm>
   );

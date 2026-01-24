@@ -1,5 +1,5 @@
 .wrapper {
-  height: calc(100vh - 56px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: #1a1a1a;
@@ -7,15 +7,50 @@
     height: 45px;
     background: #2a2a2a;
     border-bottom: 1px solid #394150;
-    padding: 0 24px;
+    padding: 0 10px 0 24px;
     display: flex;
     align-items: center;
-    .annotationType {
+    justify-content: space-between;
+    .headerLeft {
       display: flex;
-      :global {
-        .iconfont {
+      align-items: center;
+      .annotationType {
+        display: flex;
+        :global {
+          .iconfont {
+            color: #fff;
+            margin-right: 4px;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            &:last-child {
+              margin-right: 0;
+            }
+            &.active,
+            &:hover {
+              background: #394150;
+            }
+          }
+        }
+      }
+      .line {
+        width: 1px;
+        height: 18px;
+        background: #394150;
+        margin: 0 20px;
+      }
+      .redoAndUndo {
+        display: flex;
+        .icon {
           color: #fff;
           margin-right: 4px;
+          font-size: 16px;
           width: 28px;
           height: 28px;
           background: transparent;
@@ -23,43 +58,28 @@
           align-items: center;
           justify-content: center;
           border-radius: 4px;
-          font-size: 14px;
           cursor: pointer;
           &:last-child {
             margin-right: 0;
           }
-          &.active,
           &:hover {
             background: #394150;
           }
         }
       }
     }
-    .line {
-      width: 1px;
-      height: 18px;
-      background: #394150;
-      margin: 0 20px;
-    }
-    .redoAndUndo {
+    .headerRight {
       display: flex;
-      .icon {
-        color: #fff;
-        margin-right: 4px;
-        font-size: 16px;
-        width: 28px;
-        height: 28px;
-        background: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        cursor: pointer;
-        &:last-child {
-          margin-right: 0;
-        }
-        &:hover {
+      align-items: center;
+    }
+    .annotationMethod {
+      :global {
+        .ant-tag-checkable {
           background: #394150;
+          color: #fff;
+        }
+        .ant-tag-checkable-checked {
+          background: #1677ff;
         }
       }
     }
@@ -142,6 +162,9 @@
       .paramLabel {
         color: #fff;
         margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .diseaseType {
         margin-right: 8px;
@@ -170,13 +193,20 @@
         flex: 1;
         overflow-y: auto;
       }
+      .slider {
+        margin-top: 50px;
+      }
+      .sliderLabel {
+        font-size: 12px;
+        color: #fff;
+      }
     }
   }
   .footer {
     height: 45px;
     background: #2a2a2a;
     border-top: 1px solid #394150;
-    padding: 0 24px;
+    padding: 0 10px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

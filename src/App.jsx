@@ -29,14 +29,14 @@ const App = observer(() => {
     ));
   };
 
-  useEffect(() => {
-    // 检查是否有已保存的token
-    const token = localStorage.getItem("token");
-    if (token) {
-      // 如果有token，尝试获取当前用户信息
-      userStore.getCurrentUserInfo();
-    }
-  }, []);
+  // useEffect(() => {
+  //   // 检查是否有已保存的token
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     // 如果有token，尝试获取当前用户信息
+  //     userStore.getCurrentUserInfo();
+  //   }
+  // }, []);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

@@ -3,6 +3,7 @@ import { ProTable, PageContainer } from "@ant-design/pro-components";
 import { Button, message, Modal } from "antd";
 import { useRef } from "react";
 import { observer } from "mobx-react-lite";
+import dayjs from "dayjs";
 import AddModelModal from "./AddModelModal";
 import { getColumns } from "./columns";
 
@@ -17,6 +18,7 @@ const ModelTraining = observer(() => {
         {
           modelName: "工务模型",
           modelType: "YOLO",
+          createdAt: dayjs(),
         },
       ],
       page: params.page || 1,
@@ -49,11 +51,9 @@ const ModelTraining = observer(() => {
         breadcrumb: {
           items: [
             {
-              path: "",
               title: "模型训练",
             },
             {
-              path: "",
               title: "列表",
             },
           ],

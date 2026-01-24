@@ -1,5 +1,4 @@
-import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
-import { Button, Popconfirm } from "antd";
+import { Space, Popconfirm } from "antd";
 import AddTenantModal from "./AddTenantModal";
 
 export const getColumns = ({ handleDeleteTenant, reload }) => {
@@ -8,40 +7,27 @@ export const getColumns = ({ handleDeleteTenant, reload }) => {
       title: "租户名称",
       dataIndex: "name",
       key: "name",
-      width: 500,
+      width: 600,
     },
     {
-      title: "状态",
-      dataIndex: "status",
-      key: "status",
-      width: 400,
-      valueEnum: {
-        true: {
-          text: "启用",
-          status: "Success",
-        },
-        false: {
-          text: "禁用",
-          status: "Error",
-        },
-      },
+      title: "创建时间",
+      dataIndex: "createAt",
+      key: "createAt",
       search: false,
+      width: 600,
     },
     {
       title: "操作",
       valueType: "option",
       key: "option",
+      width: 120,
       render: (_, record) => (
-        <>
+        <Space>
           <AddTenantModal
             onFinish={reload}
             id={record._id}
             initialValues={record}
-            trigger={
-              <Button variant="text" color="primary" icon={<FormOutlined />}>
-                编辑
-              </Button>
-            }
+            trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
           />
           <Popconfirm
             title="确定要删除这个租户吗？"
@@ -51,11 +37,9 @@ export const getColumns = ({ handleDeleteTenant, reload }) => {
             okText="确定"
             cancelText="取消"
           >
-            <Button type="text" danger icon={<DeleteOutlined />}>
-              删除
-            </Button>
+            <a style={{ color: "#ff4d4f" }}>删除</a>
           </Popconfirm>
-        </>
+        </Space>
       ),
     },
   ];

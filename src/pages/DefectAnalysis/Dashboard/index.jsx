@@ -3,9 +3,9 @@ import {
   PageContainer,
   ProCard,
   QueryFilter,
-  ProFormSelect,
+  ProFormDateRangePicker,
 } from "@ant-design/pro-components";
-import { Progress } from "antd";
+import { Progress, Button } from "antd";
 import { Bar, Gauge } from "@ant-design/plots";
 import styles from "./index.module.less";
 import RiskHeatMap from "./RiskHeatMap";
@@ -82,26 +82,24 @@ const DefectAnalysis = () => {
   return (
     <PageContainer
       header={{
-        title: "缺陷（病害）分析",
+        title: "仪表盘",
         ghost: true,
         breadcrumb: {
           items: [
             {
-              path: "",
+              path: "/defect-analysis/overview",
               title: "缺陷（病害）分析",
             },
             {
-              path: "",
-              title: "列表",
+              title: "仪表盘",
             },
           ],
         },
       }}
+      extra={<Button type="primary">导出报表</Button>}
     >
       <QueryFilter>
-        <ProFormSelect label="项目选择" name="project" />
-        <ProFormSelect name="time" label="时间范围" />
-        <ProFormSelect name="model" label="模型选择" />
+        <ProFormDateRangePicker name="dateRange" label="时间范围" />
       </QueryFilter>
       <ProCard gutter={[8, 8]} ghost wrap>
         <ProCard

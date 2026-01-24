@@ -1,17 +1,19 @@
-import { ModalForm, ProFormText } from "@ant-design/pro-components";
-import { Form, message } from "antd";
-import { addTenant, updateTenant } from "../../../service/tenantService";
+import {
+  ModalForm,
+  ProFormDateRangePicker,
+  ProFormSelect,
+} from "@ant-design/pro-components";
+import { Form } from "antd";
 
-const AddTenantModal = ({ onFinish, trigger, id, initialValues }) => {
+const SelectProjectModal = ({ onFinish, trigger }) => {
   const [form] = Form.useForm();
 
   return (
     <ModalForm
-      title={id ? "编辑租户" : "添加租户"}
+      title="选择项目"
       trigger={trigger}
       form={form}
       autoFocusFirstInput
-      onOpenChange={(open) => open && form.setFieldsValue(initialValues)}
       modalProps={{
         destroyOnClose: true,
         width: 500,
@@ -32,13 +34,22 @@ const AddTenantModal = ({ onFinish, trigger, id, initialValues }) => {
         // return false;
       }}
     >
-      <ProFormText
+      <ProFormSelect
         name="name"
-        label="租户名称"
-        rules={[{ required: true, message: "请输入租户名称" }]}
+        label="选择项目"
+        rules={[{ required: true, message: "请选择项目" }]}
+        params={{ page: 1, pageSize: 999 }}
+        request={async (params) => {
+          return [
+            {
+              label: "项目1",
+              value: "project1",
+            },
+          ];
+        }}
       />
     </ModalForm>
   );
 };
 
-export default AddTenantModal;
+export default SelectProjectModal;

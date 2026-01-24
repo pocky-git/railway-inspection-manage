@@ -5,22 +5,26 @@ import {
   OpenAIOutlined,
   BugOutlined,
   SettingOutlined,
+  BranchesOutlined,
 } from "@ant-design/icons";
 import { Outlet } from "react-router-dom";
 
 const ProjectManage = lazy(() => import("../pages/ProjectManage"));
 const DiseaseMark = lazy(() => import("../pages/DiseaseMark"));
 const ModelTraining = lazy(() => import("../pages/ModelTraining"));
-const DefectAnalysis = lazy(() => import("../pages/DefectAnalysis"));
+const DefectAnalysisOverview = lazy(
+  () => import("../pages/DefectAnalysis/Overview"),
+);
+const DefectAnalysisDashboard = lazy(
+  () => import("../pages/DefectAnalysis/Dashboard"),
+);
 const TenantManagement = lazy(
   () => import("../pages/PermissionManage/TenantManagement"),
-);
-const DepartmentManagement = lazy(
-  () => import("../pages/PermissionManage/DepartmentManagement"),
 );
 const UserManagement = lazy(
   () => import("../pages/PermissionManage/UserManagement"),
 );
+const LineManagement = lazy(() => import("../pages/LineManagement"));
 
 export const routes = [
   {
@@ -45,11 +49,26 @@ export const routes = [
     name: "模型训练",
   },
   {
-    key: "/defect-analysis",
-    path: "/defect-analysis",
-    component: <DefectAnalysis />,
+    key: "/defect-analysis/overview",
+    path: "/defect-analysis/overview",
+    component: <DefectAnalysisOverview />,
     icon: <BugOutlined />,
     name: "缺陷（病害）分析",
+  },
+  {
+    key: "/defect-analysis/dashboard/:id",
+    path: "/defect-analysis/dashboard/:id",
+    component: <DefectAnalysisDashboard />,
+    icon: <BugOutlined />,
+    name: "缺陷（病害）分析仪表盘",
+    hideInMenu: true,
+  },
+  {
+    key: "/line-manage",
+    path: "/line-manage",
+    component: <LineManagement />,
+    icon: <BranchesOutlined />,
+    name: "线路管理",
   },
   {
     key: "/permission-manage",
@@ -64,12 +83,6 @@ export const routes = [
         component: <TenantManagement />,
         name: "租户管理",
       },
-      // {
-      //   key: "/permission-manage/department-manage",
-      //   path: "/permission-manage/department-manage",
-      //   component: <DepartmentManagement />,
-      //   name: "部门管理",
-      // },
       {
         key: "/permission-manage/user-manage",
         path: "/permission-manage/user-manage",

@@ -1,58 +1,80 @@
+import { useMemo } from "react";
 import {
   ProList,
   PageContainer,
   StatisticCard,
 } from "@ant-design/pro-components";
-import { Button } from "antd";
+import { Button, Tag, Space, Modal } from "antd";
 import AddProjectModal from "./AddProjectModal";
 import NiceModal from "@ebay/nice-modal-react";
 
 const { Divider } = StatisticCard;
 
-const data = new Array(10).fill({}).map(() => ({
-  title: "项目名称",
-  actions: [<a key="delete">删除</a>],
-  avatar:
-    "https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg",
-  content: (
-    <StatisticCard.Group>
-      <StatisticCard
-        statistic={{
-          title: "总数量",
-          value: 100,
-          status: "processing",
-        }}
-      />
-      <Divider />
-      <StatisticCard
-        statistic={{
-          title: "标签数",
-          value: 100,
-          status: "default",
-        }}
-      />
-      <StatisticCard
-        statistic={{
-          title: "已标注",
-          value: 100,
-          status: "success",
-        }}
-      />
-      <StatisticCard
-        statistic={{
-          title: "未标注",
-          value: 100,
-          status: "error",
-        }}
-      />
-    </StatisticCard.Group>
-  ),
-}));
-
 const ProjectManage = () => {
-  const handleAddProject = () => {
-    NiceModal.show(AddProjectModal);
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: "确认删除该项目吗？",
+      okText: "确认",
+      okType: "danger",
+      onOk: () => {
+        console.log(id);
+      },
+    });
   };
+
+  const data = useMemo(
+    () =>
+      new Array(10).fill({}).map(() => ({
+        title: "项目名称",
+        subTitle: (
+          <Space>
+            <Tag color="#FF9900">工务</Tag>
+            <Tag color="#5BD8A6">K100-K200</Tag>
+          </Space>
+        ),
+        actions: [
+          <a style={{ color: "#ff4d4f" }} onClick={handleDelete}>
+            删除
+          </a>,
+        ],
+        avatar:
+          "https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg",
+        content: (
+          <StatisticCard.Group>
+            <StatisticCard
+              statistic={{
+                title: "总数量",
+                value: 100,
+                status: "processing",
+              }}
+            />
+            <Divider />
+            <StatisticCard
+              statistic={{
+                title: "标签数",
+                value: 100,
+                status: "default",
+              }}
+            />
+            <StatisticCard
+              statistic={{
+                title: "已标注",
+                value: 100,
+                status: "success",
+              }}
+            />
+            <StatisticCard
+              statistic={{
+                title: "未标注",
+                value: 100,
+                status: "error",
+              }}
+            />
+          </StatisticCard.Group>
+        ),
+      })),
+    [],
+  );
 
   return (
     <NiceModal.Provider>
@@ -63,11 +85,9 @@ const ProjectManage = () => {
           breadcrumb: {
             items: [
               {
-                path: "",
                 title: "项目管理",
               },
               {
-                path: "",
                 title: "列表",
               },
             ],
@@ -103,11 +123,41 @@ const ProjectManage = () => {
               dataIndex: "title",
               title: "项目名称",
             },
+            subTitle: {
+              search: false,
+            },
             content: {
               search: false,
             },
             actions: {
               cardActionProps: "extra",
+            },
+            specialty: {
+              title: "专业",
+              valueEnum: {
+                1: "工务",
+                2: "电务",
+                3: "供电",
+              },
+            },
+            line: {
+              title: "线路",
+              valueType: "select",
+              fieldProps: {
+                showSearch: true,
+              },
+              request: async () => {
+                return [
+                  {
+                    label: "K100-K200",
+                    value: "K100-K200",
+                  },
+                  {
+                    label: "K200-K300",
+                    value: "K200-K300",
+                  },
+                ];
+              },
             },
           }}
           dataSource={data}
