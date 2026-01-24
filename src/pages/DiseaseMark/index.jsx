@@ -7,14 +7,15 @@ import {
   Badge,
   Button,
   Tooltip,
-  Modal,
   Upload,
   Space,
   Slider,
+  Popconfirm,
 } from "antd";
 import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
 import SelectProjectModal from "./SelectProjectModal";
+import { SHAPE_TYPE } from "./constants";
 import styles from "./index.module.less";
 import img from "./a.jpg";
 import img2 from "./c.jpg";
@@ -240,7 +241,7 @@ const DiseaseMark = () => {
       ctx.setLineDash([5, 5]); // 虚线
       ctx.fillStyle = "rgba(24, 144, 255, 0.1)";
 
-      if (annotationType === "rectangle") {
+      if (annotationType === SHAPE_TYPE.RECTANGLE) {
         // 绘制矩形
         ctx.strokeRect(
           currentAnnotation.x,
@@ -291,61 +292,44 @@ const DiseaseMark = () => {
       ctx.lineWidth = 2;
       ctx.fillStyle = typeInfo.color + "1A"; // 10%透明度
 
-      if (annotation.shape === "polygon") {
-        // 绘制多边形
-        if (annotation.points && annotation.points.length > 2) {
-          ctx.beginPath();
-          // 应用缩放和偏移绘制多边形
-          ctx.moveTo(
-            imageX + annotation.points[0].x * scaleFactor,
-            imageY + annotation.points[0].y * scaleFactor,
+      // 统一使用points数组绘制标注，无论是多边形还是矩形
+      if (annotation.points && annotation.points.length > 0) {
+        ctx.beginPath();
+        // 应用缩放和偏移绘制
+        ctx.moveTo(
+          imageX + annotation.points[0].x * scaleFactor,
+          imageY + annotation.points[0].y * scaleFactor,
+        );
+
+        for (let i = 1; i < annotation.points.length; i++) {
+          ctx.lineTo(
+            imageX + annotation.points[i].x * scaleFactor,
+            imageY + annotation.points[i].y * scaleFactor,
           );
-
-          for (let i = 1; i < annotation.points.length; i++) {
-            ctx.lineTo(
-              imageX + annotation.points[i].x * scaleFactor,
-              imageY + annotation.points[i].y * scaleFactor,
-            );
-          }
-
-          ctx.closePath();
-          ctx.stroke();
-          ctx.fill();
-
-          // 绘制多边形顶点
-          annotation.points.forEach((point) => {
-            ctx.fillStyle = typeInfo.color;
-            ctx.beginPath();
-            ctx.arc(
-              imageX + point.x * scaleFactor,
-              imageY + point.y * scaleFactor,
-              3,
-              0,
-              Math.PI * 2,
-            );
-            ctx.fill();
-          });
         }
-      } else {
-        // 绘制矩形（应用缩放和偏移）
-        const rectX = imageX + annotation.x * scaleFactor;
-        const rectY = imageY + annotation.y * scaleFactor;
-        const rectWidth = annotation.width * scaleFactor;
-        const rectHeight = annotation.height * scaleFactor;
 
-        ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
-        ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+
+        // 绘制顶点
+        annotation.points.forEach((point) => {
+          ctx.fillStyle = typeInfo.color;
+          ctx.beginPath();
+          ctx.arc(
+            imageX + point.x * scaleFactor,
+            imageY + point.y * scaleFactor,
+            3,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+        });
       }
 
-      // 绘制标注信息背景
-      const labelX =
-        annotation.shape === "polygon" && annotation.points.length > 0
-          ? imageX + annotation.points[0].x * scaleFactor
-          : imageX + annotation.x * scaleFactor;
-      const labelY =
-        annotation.shape === "polygon" && annotation.points.length > 0
-          ? imageY + annotation.points[0].y * scaleFactor
-          : imageY + annotation.y * scaleFactor;
+      // 绘制标注信息背景，统一使用points数组获取起始位置
+      const labelX = imageX + annotation.points?.[0]?.x * scaleFactor;
+      const labelY = imageY + annotation.points?.[0]?.y * scaleFactor;
 
       ctx.fillStyle = typeInfo.color + "CC"; // 添加透明度
       ctx.fillRect(labelX, labelY - 25, 120, 25);
@@ -400,11 +384,11 @@ const DiseaseMark = () => {
 
     const { x, y } = getImageCoordinates(e);
 
-    if (annotationType === "rectangle") {
+    if (annotationType === SHAPE_TYPE.RECTANGLE) {
       // 矩形模式 - 开始绘制
       setCurrentAnnotation({ x, y, width: 0, height: 0 });
       setIsDrawing(true);
-    } else if (annotationType === "polygon") {
+    } else if (annotationType === SHAPE_TYPE.POLYGON) {
       // 检查点击位置是否在图片范围内
       if (!isPointInImageBounds(x, y)) {
         message.warning("请在图片范围内添加多边形顶点");
@@ -431,7 +415,7 @@ const DiseaseMark = () => {
 
     const { x, y } = getImageCoordinates(e);
 
-    if (annotationType === "rectangle") {
+    if (annotationType === SHAPE_TYPE.RECTANGLE) {
       // 矩形模式 - 更新矩形尺寸
       setCurrentAnnotation((prev) => ({
         ...prev,
@@ -446,7 +430,7 @@ const DiseaseMark = () => {
 
   // 鼠标释放事件 - 结束绘制
   const handleMouseUp = () => {
-    if (!isDrawing || annotationType !== "rectangle") return;
+    if (!isDrawing || annotationType !== SHAPE_TYPE.RECTANGLE) return;
 
     // 矩形模式 - 结束绘制
     setIsDrawing(false);
@@ -483,13 +467,16 @@ const DiseaseMark = () => {
         relativeX + relativeWidth <= imageWidth &&
         relativeY + relativeHeight <= imageHeight
       ) {
+        // 矩形标注使用points数组表示，与多边形格式完全一致
         const newAnnotation = {
           id: Date.now(),
-          shape: "rectangle",
-          x: relativeX,
-          y: relativeY,
-          width: relativeWidth,
-          height: relativeHeight,
+          shape: SHAPE_TYPE.RECTANGLE,
+          points: [
+            { x: relativeX, y: relativeY }, // 左上角
+            { x: relativeX + relativeWidth, y: relativeY }, // 右上角
+            { x: relativeX + relativeWidth, y: relativeY + relativeHeight }, // 右下角
+            { x: relativeX, y: relativeY + relativeHeight }, // 左下角
+          ],
           type: diseaseType || "other",
           name: diseaseRemark || "无备注",
           createdAt: new Date().toISOString(),
@@ -511,7 +498,7 @@ const DiseaseMark = () => {
 
   // 鼠标双击事件 - 完成多边形绘制
   const handleDoubleClick = () => {
-    if (!isDrawing || annotationType !== "polygon") return;
+    if (!isDrawing || annotationType !== SHAPE_TYPE.POLYGON) return;
 
     // 多边形模式 - 结束绘制
     if (polygonPoints.length < 3) {
@@ -546,7 +533,7 @@ const DiseaseMark = () => {
 
     const newAnnotation = {
       id: Date.now(),
-      shape: "polygon",
+      shape: SHAPE_TYPE.POLYGON,
       points: originalPoints,
       type: diseaseType || "other",
       name: diseaseRemark || "无备注",
@@ -567,7 +554,11 @@ const DiseaseMark = () => {
   // 键盘事件处理 - 支持按Enter键完成多边形绘制
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Enter" && isDrawing && annotationType === "polygon") {
+      if (
+        e.key === "Enter" &&
+        isDrawing &&
+        annotationType === SHAPE_TYPE.POLYGON
+      ) {
         handleDoubleClick();
       } else if (e.key === "Escape" && isDrawing) {
         // 按Escape键取消绘制
@@ -602,44 +593,35 @@ const DiseaseMark = () => {
       imageId: currentImage.id,
       imageName: currentImage.name,
       annotations: currentAnnotations.map((anno) => {
-        if (anno.shape === "polygon") {
-          // 多边形标注 - 计算相对坐标
-          return {
-            ...anno,
-            // 计算多边形的边界框
-            boundingBox: {
-              x: Math.min(...anno.points.map((p) => p.x)),
-              y: Math.min(...anno.points.map((p) => p.y)),
-              width:
-                Math.max(...anno.points.map((p) => p.x)) -
-                Math.min(...anno.points.map((p) => p.x)),
-              height:
-                Math.max(...anno.points.map((p) => p.y)) -
-                Math.min(...anno.points.map((p) => p.y)),
-            },
-            // 计算相对坐标
-            relativePoints: anno.points.map((p) => ({
-              x: p.x / imageWidth || 0,
-              y: p.y / imageHeight || 0,
-            })),
-          };
-        } else {
-          // 矩形标注 - 计算相对坐标
-          return {
-            ...anno,
-            relativeX: anno.x / imageWidth || 0,
-            relativeY: anno.y / imageHeight || 0,
-            relativeWidth: anno.width / imageWidth || 0,
-            relativeHeight: anno.height / imageHeight || 0,
-          };
-        }
+        // 统一处理所有标注类型，使用points数组计算边界框和相对坐标
+        return {
+          ...anno,
+          // 计算边界框
+          boundingBox: {
+            x: Math.min(...anno.points.map((p) => p.x)),
+            y: Math.min(...anno.points.map((p) => p.y)),
+            width:
+              Math.max(...anno.points.map((p) => p.x)) -
+              Math.min(...anno.points.map((p) => p.x)),
+            height:
+              Math.max(...anno.points.map((p) => p.y)) -
+              Math.min(...anno.points.map((p) => p.y)),
+          },
+          // 计算相对坐标点
+          relativePoints: anno.points.map((p) => ({
+            x: p.x / imageWidth || 0,
+            y: p.y / imageHeight || 0,
+          })),
+        };
       }),
       timestamp: new Date().toISOString(),
       totalAnnotations: currentAnnotations.length,
-      rectangleCount: currentAnnotations.filter((a) => a.shape === "rectangle")
-        .length,
-      polygonCount: currentAnnotations.filter((a) => a.shape === "polygon")
-        .length,
+      rectangleCount: currentAnnotations.filter(
+        (a) => a.shape === SHAPE_TYPE.RECTANGLE,
+      ).length,
+      polygonCount: currentAnnotations.filter(
+        (a) => a.shape === SHAPE_TYPE.POLYGON,
+      ).length,
     };
 
     // 这里可以替换为实际的保存逻辑，比如发送到后端API
@@ -656,43 +638,29 @@ const DiseaseMark = () => {
       return;
     }
 
-    Modal.confirm({
-      title: "确认清除所有标注吗？",
-      okText: "确认",
-      okType: "danger",
-      onOk: () => {
-        // 清除前保存当前状态到撤销栈
-        setUndoStack((prev) => [...prev, currentAnnotations]);
-        // 清空复原栈，因为有了新操作
-        setRedoStack([]);
-        setCurrentAnnotations([]);
-        setCurrentAnnotation({ x: 0, y: 0, width: 0, height: 0 });
-        setPolygonPoints([]);
-        setIsDrawing(false);
-        message.success("所有标注已清除");
-      },
-    });
+    // 清除前保存当前状态到撤销栈
+    setUndoStack((prev) => [...prev, currentAnnotations]);
+    // 清空复原栈，因为有了新操作
+    setRedoStack([]);
+    setCurrentAnnotations([]);
+    setCurrentAnnotation({ x: 0, y: 0, width: 0, height: 0 });
+    setPolygonPoints([]);
+    setIsDrawing(false);
+    message.success("所有标注已清除");
   };
 
   // 删除单个标注
   const handleDeleteAnnotation = (id) => {
-    Modal.confirm({
-      title: "确认删除该标注吗？",
-      okText: "确认",
-      okType: "danger",
-      onOk: () => {
-        // 删除前保存当前状态到撤销栈
-        setUndoStack((prev) => [...prev, currentAnnotations]);
-        // 清空复原栈，因为有了新操作
-        setRedoStack([]);
+    // 删除前保存当前状态到撤销栈
+    setUndoStack((prev) => [...prev, currentAnnotations]);
+    // 清空复原栈，因为有了新操作
+    setRedoStack([]);
 
-        const updatedAnnotations = currentAnnotations.filter(
-          (anno) => anno.id !== id,
-        );
-        setCurrentAnnotations(updatedAnnotations);
-        message.success("标注已删除");
-      },
-    });
+    const updatedAnnotations = currentAnnotations.filter(
+      (anno) => anno.id !== id,
+    );
+    setCurrentAnnotations(updatedAnnotations);
+    message.success("标注已删除");
   };
 
   // 撤销操作
@@ -761,51 +729,116 @@ const DiseaseMark = () => {
       newAnnotations = {
         1: [
           {
-            id: 1769245863210,
-            shape: "polygon",
+            id: 1769271495879,
+            shape: SHAPE_TYPE.RECTANGLE,
             points: [
               {
-                x: 114.28571428571429,
-                y: 90,
+                x: 45,
+                y: 42,
               },
               {
-                x: 368.5714285714286,
-                y: 130,
+                x: 194,
+                y: 42,
               },
               {
-                x: 232.85714285714286,
-                y: 251.42857142857144,
+                x: 194,
+                y: 223,
               },
               {
-                x: 114.28571428571429,
-                y: 185.71428571428572,
+                x: 45,
+                y: 223,
               },
             ],
             type: "other",
             name: "无备注",
-            createdAt: "2026-01-24T09:11:03.210Z",
+            createdAt: "2026-01-24T16:18:15.879Z",
             boundingBox: {
-              x: 114.28571428571429,
-              y: 90,
-              width: 254.28571428571433,
-              height: 161.42857142857144,
+              x: 45,
+              y: 42,
+              width: 149,
+              height: 181,
             },
             relativePoints: [
               {
-                x: 0.2285714285714286,
-                y: 0.18,
+                x: 0.09,
+                y: 0.084,
               },
               {
-                x: 0.7371428571428572,
-                y: 0.26,
+                x: 0.388,
+                y: 0.084,
               },
               {
-                x: 0.46571428571428575,
-                y: 0.5028571428571429,
+                x: 0.388,
+                y: 0.446,
               },
               {
-                x: 0.2285714285714286,
-                y: 0.37142857142857144,
+                x: 0.09,
+                y: 0.446,
+              },
+            ],
+          },
+          {
+            id: 1769271502898,
+            shape: SHAPE_TYPE.POLYGON,
+            points: [
+              {
+                x: 239,
+                y: 179,
+              },
+              {
+                x: 419,
+                y: 219,
+              },
+              {
+                x: 360,
+                y: 369,
+              },
+              {
+                x: 236,
+                y: 381,
+              },
+              {
+                x: 174,
+                y: 320,
+              },
+              {
+                x: 193,
+                y: 276,
+              },
+            ],
+            type: "rust",
+            name: "无备注",
+            createdAt: "2026-01-24T16:18:22.898Z",
+            boundingBox: {
+              x: 174,
+              y: 179,
+              width: 245,
+              height: 202,
+            },
+            relativePoints: [
+              {
+                x: 0.478,
+                y: 0.358,
+              },
+              {
+                x: 0.838,
+                y: 0.438,
+              },
+              {
+                x: 0.72,
+                y: 0.738,
+              },
+              {
+                x: 0.472,
+                y: 0.762,
+              },
+              {
+                x: 0.348,
+                y: 0.64,
+              },
+              {
+                x: 0.386,
+                y: 0.552,
               },
             ],
           },
@@ -930,17 +963,17 @@ const DiseaseMark = () => {
             <Tooltip placement="bottom" title="矩形标注">
               <div
                 className={`iconfont icon-rectangle ${
-                  annotationType === "rectangle" ? "active" : ""
+                  annotationType === SHAPE_TYPE.RECTANGLE ? "active" : ""
                 }`}
-                onClick={() => setAnnotationType("rectangle")}
+                onClick={() => setAnnotationType(SHAPE_TYPE.RECTANGLE)}
               />
             </Tooltip>
             <Tooltip placement="bottom" title="多边形标注">
               <div
                 className={`iconfont icon-polygon ${
-                  annotationType === "polygon" ? "active" : ""
+                  annotationType === SHAPE_TYPE.POLYGON ? "active" : ""
                 }`}
-                onClick={() => setAnnotationType("polygon")}
+                onClick={() => setAnnotationType(SHAPE_TYPE.POLYGON)}
               />
             </Tooltip>
           </div>
@@ -1092,13 +1125,14 @@ const DiseaseMark = () => {
           <div className={`${styles.paramItem} ${styles.markList}`}>
             <div className={styles.paramLabel}>
               标注列表
-              <a
-                style={{ color: "#ff4d4f" }}
-                className={styles.markListItemDeleteBtn}
-                onClick={handleClear}
-              >
-                清空
-              </a>
+              <Popconfirm title="确认清空所有标注吗？" onConfirm={handleClear}>
+                <a
+                  style={{ color: "#ff4d4f" }}
+                  className={styles.markListItemDeleteBtn}
+                >
+                  清空
+                </a>
+              </Popconfirm>
             </div>
             <div className={styles.markListWrapper}>
               {!!currentAnnotations?.length && (
@@ -1112,13 +1146,17 @@ const DiseaseMark = () => {
                       <List.Item
                         key={item.id}
                         actions={[
-                          <a
-                            style={{ color: "#ff4d4f" }}
-                            className={styles.markListItemDeleteBtn}
-                            onClick={() => handleDeleteAnnotation(item.id)}
+                          <Popconfirm
+                            title="确认删除该标注吗？"
+                            onConfirm={() => handleDeleteAnnotation(item.id)}
                           >
-                            删除
-                          </a>,
+                            <a
+                              style={{ color: "#ff4d4f" }}
+                              className={styles.markListItemDeleteBtn}
+                            >
+                              删除
+                            </a>
+                          </Popconfirm>,
                         ]}
                       >
                         <List.Item.Meta
