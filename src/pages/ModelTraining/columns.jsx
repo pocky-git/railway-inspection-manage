@@ -1,4 +1,4 @@
-import { Space } from "antd";
+import { Space, Tooltip } from "antd";
 import AddProjectModal from "./AddModelModal";
 import TrainingModal from "./TrainingModal";
 
@@ -36,7 +36,10 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
       valueEnum: {
         1: { text: "训练完成", status: "Success" },
         2: { text: "训练中", status: "Processing" },
-        3: { text: "训练失败", status: "Error" },
+        3: {
+          text: <Tooltip title="失败原因：数据集格式错误">训练失败</Tooltip>,
+          status: "Error",
+        },
         4: { text: "训练未开始", status: "Default" },
       },
       width: 300,
@@ -71,17 +74,15 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
               </a>
             }
           />
-          <TrainingModal
-            trigger={
-              <a style={{ color: "#1677ff" }} type="link">
-                {record.status === 4
-                  ? "开始训练"
-                  : record.status === 3
-                    ? "重新开始"
-                    : "修改参数"}
-              </a>
-            }
-          />
+          {[3, 4].includes(record.status) && (
+            <TrainingModal
+              trigger={
+                <a style={{ color: "#1677ff" }} type="link">
+                  {record.status === 4 ? "开始训练" : "重新开始"}
+                </a>
+              }
+            />
+          )}
         </Space>
       ),
     },
