@@ -1,4 +1,5 @@
 import { Space } from "antd";
+import AddProjectModal from "./AddModelModal";
 import TrainingModal from "./TrainingModal";
 
 export const getColumns = ({ handleDeleteModelTraining }) => {
@@ -26,10 +27,25 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
     {
       title: "操作",
       key: "action",
-      width: 120,
+      width: 180,
       valueType: "option",
       render: (_, record) => (
         <Space>
+          <a
+            style={{ color: "#ff4d4f" }}
+            onClick={() => handleDeleteModelTraining(record.id)}
+          >
+            删除
+          </a>
+          <AddProjectModal
+            isEdit
+            initialValues={record}
+            trigger={
+              <a style={{ color: "#1677ff" }} type="link">
+                编辑
+              </a>
+            }
+          />
           <TrainingModal
             trigger={
               <a style={{ color: "#1677ff" }} type="link">
@@ -37,12 +53,6 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
               </a>
             }
           />
-          <a
-            style={{ color: "#ff4d4f" }}
-            onClick={() => handleDeleteModelTraining(record._id)}
-          >
-            删除
-          </a>
         </Space>
       ),
     },

@@ -5,12 +5,12 @@ import {
 } from "@ant-design/pro-components";
 import { Form, message } from "antd";
 
-const AddLineModal = ({ onFinish, trigger, id, initialValues }) => {
+const AddLineModal = ({ onFinish, trigger, isEdit, initialValues }) => {
   const [form] = Form.useForm();
 
   return (
     <ModalForm
-      title={id ? "编辑线路" : "添加线路"}
+      title={isEdit ? "编辑线路" : "添加线路"}
       trigger={trigger}
       form={form}
       autoFocusFirstInput

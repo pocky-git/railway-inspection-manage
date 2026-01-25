@@ -5,7 +5,7 @@ import {
   ProFormSelect,
 } from "@ant-design/pro-components";
 
-const AddModelModal = ({ trigger, initialValues, onFinish }) => {
+const AddModelModal = ({ trigger, initialValues, isEdit, onFinish }) => {
   const [form] = Form.useForm();
 
   // 提交表单
@@ -15,7 +15,7 @@ const AddModelModal = ({ trigger, initialValues, onFinish }) => {
 
   return (
     <ModalForm
-      title="新建模型"
+      title={isEdit ? "编辑模型" : "新建模型"}
       trigger={trigger}
       form={form}
       autoFocusFirstInput
@@ -31,20 +31,21 @@ const AddModelModal = ({ trigger, initialValues, onFinish }) => {
         label="模型名称"
         rules={[{ required: true, message: "请输入模型名称" }]}
       />
-
-      <ProFormSelect
-        name="modelType"
-        label="模型类型"
-        rules={[{ required: true, message: "请选择模型类型" }]}
-        valueEnum={{
-          1: {
-            text: "YOLO",
-          },
-          2: {
-            text: "SAM",
-          },
-        }}
-      />
+      {!isEdit && (
+        <ProFormSelect
+          name="modelType"
+          label="模型类型"
+          rules={[{ required: true, message: "请选择模型类型" }]}
+          valueEnum={{
+            1: {
+              text: "YOLO",
+            },
+            2: {
+              text: "SAM",
+            },
+          }}
+        />
+      )}
     </ModalForm>
   );
 };

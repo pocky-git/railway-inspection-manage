@@ -43,6 +43,28 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
       },
     },
     {
+      title: "负责线路",
+      dataIndex: "line_labels",
+      key: "line_labels",
+      valueType: "select",
+      fieldProps: {
+        showSearch: true,
+        mode: "multiple",
+      },
+      request: async () => {
+        return [
+          {
+            label: "K100-K200",
+            value: "K100-K200",
+          },
+          {
+            label: "K200-K300",
+            value: "K200-K300",
+          },
+        ];
+      },
+    },
+    {
       title: "角色",
       dataIndex: "role_id",
       key: "role_id",
@@ -90,22 +112,18 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
       key: "option",
       render: (_, record) => (
         <Space>
+          <a
+            style={{ color: "#ff4d4f" }}
+            onClick={() => handleDeleteUser(record._id)}
+          >
+            删除
+          </a>
           <AddUserModal
             onFinish={reload}
-            id={record._id}
+            isEdit
             initialValues={record}
             trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
           />
-          <Popconfirm
-            title="确定要删除这个用户吗？"
-            onConfirm={() => {
-              handleDeleteUser(record._id);
-            }}
-            okText="确定"
-            cancelText="取消"
-          >
-            <a style={{ color: "#ff4d4f" }}>删除</a>
-          </Popconfirm>
         </Space>
       ),
     },

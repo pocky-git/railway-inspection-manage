@@ -30,7 +30,8 @@ export const getColumns = ({ handleDeleteLine, reload }) => {
             删除
           </a>
           <AddLineModal
-            id={record.id}
+            isEdit
+            initialValues={record}
             trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
             onFinish={reload}
           />

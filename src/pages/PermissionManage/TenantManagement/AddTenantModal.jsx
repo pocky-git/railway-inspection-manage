@@ -2,12 +2,12 @@ import { ModalForm, ProFormText } from "@ant-design/pro-components";
 import { Form, message } from "antd";
 import { addTenant, updateTenant } from "../../../service/tenantService";
 
-const AddTenantModal = ({ onFinish, trigger, id, initialValues }) => {
+const AddTenantModal = ({ onFinish, trigger, isEdit, initialValues }) => {
   const [form] = Form.useForm();
 
   return (
     <ModalForm
-      title={id ? "编辑租户" : "添加租户"}
+      title={isEdit ? "编辑租户" : "添加租户"}
       trigger={trigger}
       form={form}
       autoFocusFirstInput

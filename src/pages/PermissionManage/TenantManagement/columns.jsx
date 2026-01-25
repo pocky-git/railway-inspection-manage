@@ -23,22 +23,18 @@ export const getColumns = ({ handleDeleteTenant, reload }) => {
       width: 120,
       render: (_, record) => (
         <Space>
+          <a
+            style={{ color: "#ff4d4f" }}
+            onClick={() => handleDeleteTenant(record._id)}
+          >
+            删除
+          </a>
           <AddTenantModal
             onFinish={reload}
-            id={record._id}
+            isEdit
             initialValues={record}
             trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
           />
-          <Popconfirm
-            title="确定要删除这个租户吗？"
-            onConfirm={() => {
-              handleDeleteTenant(record._id);
-            }}
-            okText="确定"
-            cancelText="取消"
-          >
-            <a style={{ color: "#ff4d4f" }}>删除</a>
-          </Popconfirm>
         </Space>
       ),
     },

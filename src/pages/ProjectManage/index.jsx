@@ -36,6 +36,10 @@ const ProjectManage = () => {
           <a style={{ color: "#ff4d4f" }} onClick={handleDelete}>
             删除
           </a>,
+          <AddProjectModal
+            isEdit
+            trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
+          />,
         ],
         avatar:
           "https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg",
@@ -145,6 +149,7 @@ const ProjectManage = () => {
               valueType: "select",
               fieldProps: {
                 showSearch: true,
+                mode: "multiple",
               },
               request: async () => {
                 return [

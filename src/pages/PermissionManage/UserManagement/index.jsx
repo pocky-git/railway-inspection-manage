@@ -20,6 +20,7 @@ const UserManagement = observer(() => {
         role_id: "admin",
         specialty: "workforce",
         tenant_name: "广州铁路局",
+        line_labels: "K100-K200",
         createAt: "2026-01-01",
       },
       {
@@ -31,6 +32,7 @@ const UserManagement = observer(() => {
         role_id: "regular_user",
         specialty: "workforce",
         tenant_name: "广州铁路局",
+        line_labels: "K200-K300",
         createAt: "2026-01-02",
       },
     ];
