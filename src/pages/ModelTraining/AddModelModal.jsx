@@ -43,6 +43,9 @@ const AddModelModal = ({ trigger, initialValues, isEdit, onFinish }) => {
             2: {
               text: "SAM",
             },
+            3: {
+              text: "MMSeg",
+            },
           }}
         />
       )}

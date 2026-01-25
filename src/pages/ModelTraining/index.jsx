@@ -16,13 +16,36 @@ const ModelTraining = observer(() => {
     return {
       data: [
         {
+          id: 1,
           modelName: "工务模型",
           modelType: "YOLO",
           createdAt: dayjs(),
+          status: 1,
+        },
+        {
+          id: 2,
+          modelName: "电务模型",
+          modelType: "YOLO",
+          createdAt: dayjs(),
+          status: 2,
+        },
+        {
+          id: 3,
+          modelName: "供电模型",
+          modelType: "YOLO",
+          createdAt: dayjs(),
+          status: 3,
+        },
+        {
+          id: 4,
+          modelName: "供电模型",
+          modelType: "YOLO",
+          createdAt: dayjs(),
+          status: 4,
         },
       ],
       page: params.page || 1,
-      total: 0,
+      total: 1,
     };
   };
 
@@ -76,7 +99,7 @@ const ModelTraining = observer(() => {
             total: res?.total || 0,
           }));
         }}
-        rowKey="_id"
+        rowKey="id"
         search={{
           labelWidth: "auto",
         }}

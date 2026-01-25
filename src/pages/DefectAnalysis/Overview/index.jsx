@@ -7,9 +7,36 @@ import dayjs from "dayjs";
 import { getColumns } from "./columns";
 import AddAnalysisModal from "./AddAnalysisModal";
 
-const TenantManagement = observer(() => {
+const DefectAnalysisOverview = observer(() => {
   const actionRef = useRef();
   const navigate = useNavigate();
+
+  const getMockData = async () => [
+    {
+      name: "测试项目1",
+      modelName: "工务模型",
+      timeRange: [dayjs().add(-7, "d"), dayjs()],
+      createdAt: dayjs(),
+      id: 1,
+      status: 1,
+    },
+    {
+      name: "测试项目2",
+      modelName: "电务模型",
+      timeRange: [dayjs().add(-7, "d"), dayjs()],
+      createdAt: dayjs(),
+      id: 2,
+      status: 2,
+    },
+    {
+      name: "测试项目3",
+      modelName: "供电模型",
+      timeRange: [dayjs().add(-7, "d"), dayjs()],
+      createdAt: dayjs(),
+      id: 3,
+      status: 3,
+    },
+  ];
 
   // 删除分析
   const handleDeleteAnalysis = async (id) => {
@@ -57,29 +84,17 @@ const TenantManagement = observer(() => {
         actionRef={actionRef}
         cardBordered
         request={async (params) => {
-          // const { current, ...rest } = params;
-          // return getTenants({
-          //   page: current,
-          //   ...rest,
-          // }).then((res) => ({
-          //   data: res?.data?.list || [],
-          //   page: res?.data?.page || 1,
-          //   total: res?.data?.total || 0,
-          // }));
-          return Promise.resolve({
-            data: [
-              {
-                name: "K100-K200",
-                modelName: "工务模型",
-                timeRange: [dayjs().add(-7, "d"), dayjs()],
-                id: "1",
-              },
-            ],
+          const { current, ...rest } = params;
+          return getMockData({
+            page: current,
+            ...rest,
+          }).then((res) => ({
+            data: res,
             page: 1,
             total: 1,
-          });
+          }));
         }}
-        rowKey="_id"
+        rowKey="id"
         search={{
           labelWidth: "auto",
         }}
@@ -94,4 +109,4 @@ const TenantManagement = observer(() => {
   );
 });
 
-export default TenantManagement;
+export default DefectAnalysisOverview;

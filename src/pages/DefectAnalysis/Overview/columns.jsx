@@ -11,18 +11,22 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
         showSearch: true,
       },
       request: async () => {
-        // return getTenants({
-        //   page: 1,
-        //   pageSize: 999,
-        // }).then(
-        //   (res) =>
-        //     res.data?.list?.map?.((item) => ({
-        //       label: item.name,
-        //       value: item._id,
-        //     })) || [],
-        // );
+        return [
+          {
+            label: "测试项目1",
+            value: 1,
+          },
+          {
+            label: "测试项目2",
+            value: 2,
+          },
+          {
+            label: "测试项目3",
+            value: 3,
+          },
+        ];
       },
-      width: 300,
+      width: 200,
     },
     {
       title: "模型名称",
@@ -33,25 +37,49 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
         showSearch: true,
       },
       request: async () => {
-        // return getTenants({
-        //   page: 1,
-        //   pageSize: 999,
-        // }).then(
-        //   (res) =>
-        //     res.data?.list?.map?.((item) => ({
-        //       label: item.name,
-        //       value: item._id,
-        //     })) || [],
-        // );
+        return [
+          {
+            label: "工务模型",
+            value: 1,
+          },
+          {
+            label: "电务模型",
+            value: 2,
+          },
+          {
+            label: "供电模型",
+            value: 3,
+          },
+        ];
       },
-      width: 300,
+      width: 200,
     },
     {
       title: "时间范围",
       dataIndex: "timeRange",
       key: "timeRange",
       valueType: "dateRange",
-      width: 300,
+      width: 200,
+    },
+    {
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
+      valueType: "select",
+      valueEnum: {
+        1: { text: "分析完成", status: "Success" },
+        2: { text: "分析中", status: "Processing" },
+        3: { text: "分析失败", status: "Error" },
+      },
+      width: 200,
+    },
+    {
+      title: "创建时间",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      valueType: "date",
+      width: 200,
+      search: false,
     },
     {
       title: "操作",
@@ -61,17 +89,21 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
       render: (_, record) => (
         <Space>
           <a
-            style={{ color: "#1677ff" }}
-            onClick={() => handleGoDashboard(record.id)}
-          >
-            仪表盘
-          </a>
-          <a
             style={{ color: "#ff4d4f" }}
             onClick={() => handleDeleteAnalysis(record.id)}
           >
             删除
           </a>
+          {record.status === 3 ? (
+            <a style={{ color: "#1677ff" }}>重新启动</a>
+          ) : (
+            <a
+              style={{ color: "#1677ff" }}
+              onClick={() => handleGoDashboard(record.id)}
+            >
+              仪表盘
+            </a>
+          )}
         </Space>
       ),
     },

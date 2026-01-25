@@ -26,7 +26,7 @@ const AddProjectModal = ({ trigger, initialValues, isEdit, onFinish }) => {
       onFinish={handleFinish}
     >
       <ProFormText
-        name="projectName"
+        name="title"
         label="项目名称"
         rules={[{ required: true, message: "请输入项目名称" }]}
       />
@@ -37,9 +37,9 @@ const AddProjectModal = ({ trigger, initialValues, isEdit, onFinish }) => {
             label="选择专业"
             rules={[{ required: true, message: "请选择专业" }]}
             options={[
-              { label: "工务", value: "specialty1" },
-              { label: "电务", value: "specialty2" },
-              { label: "供电", value: "specialty3" },
+              { label: "工务", value: 1 },
+              { label: "电务", value: 2 },
+              { label: "供电", value: 3 },
             ]}
           />
           <ProFormSelect

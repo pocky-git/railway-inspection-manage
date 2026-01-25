@@ -10,7 +10,7 @@ import { Bar, Gauge } from "@ant-design/plots";
 import styles from "./index.module.less";
 import RiskHeatMap from "./RiskHeatMap";
 
-const DefectAnalysis = () => {
+const DefectAnalysisDashboard = () => {
   const defectTypeBarConfig = useMemo(
     () => ({
       data: [
@@ -173,4 +173,4 @@ const DefectAnalysis = () => {
   );
 };
 
-export default DefectAnalysis;
+export default DefectAnalysisDashboard;

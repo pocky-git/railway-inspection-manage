@@ -16,7 +16,7 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
 
   return (
     <ModalForm
-      title="开始训练"
+      title="配置参数"
       trigger={trigger}
       form={form}
       autoFocusFirstInput

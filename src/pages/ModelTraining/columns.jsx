@@ -16,6 +16,30 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
       key: "modelType",
       valueType: "select",
       width: 300,
+      valueEnum: {
+        1: {
+          text: "YOLO",
+        },
+        2: {
+          text: "SAM",
+        },
+        3: {
+          text: "MMSeg",
+        },
+      },
+    },
+    {
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
+      valueType: "select",
+      valueEnum: {
+        1: { text: "训练完成", status: "Success" },
+        2: { text: "训练中", status: "Processing" },
+        3: { text: "训练失败", status: "Error" },
+        4: { text: "训练未开始", status: "Default" },
+      },
+      width: 300,
     },
     {
       title: "创建时间",
@@ -23,6 +47,7 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
       key: "createdAt",
       valueType: "date",
       width: 300,
+      search: false,
     },
     {
       title: "操作",
@@ -49,7 +74,11 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
           <TrainingModal
             trigger={
               <a style={{ color: "#1677ff" }} type="link">
-                开始训练
+                {record.status === 4
+                  ? "开始训练"
+                  : record.status === 3
+                    ? "重新开始"
+                    : "修改参数"}
               </a>
             }
           />

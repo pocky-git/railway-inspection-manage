@@ -43,8 +43,16 @@ const AddAnalysisModal = ({ onFinish, trigger, initialValues }) => {
         request={async (params) => {
           return [
             {
-              label: "项目1",
-              value: "project1",
+              label: "测试项目1",
+              value: "testProject1",
+            },
+            {
+              label: "测试项目2",
+              value: "testProject2",
+            },
+            {
+              label: "测试项目3",
+              value: "testProject3",
             },
           ];
         }}
@@ -58,15 +66,15 @@ const AddAnalysisModal = ({ onFinish, trigger, initialValues }) => {
           return [
             {
               label: "工务模型",
-              value: "workModel",
+              value: 1,
             },
             {
               label: "电务模型",
-              value: "electricalModel",
+              value: 2,
             },
             {
               label: "供电模型",
-              value: "supplyModel",
+              value: 3,
             },
           ];
         }}

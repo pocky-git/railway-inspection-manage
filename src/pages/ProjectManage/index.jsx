@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ProList,
   PageContainer,
@@ -7,10 +7,44 @@ import {
 import { Button, Tag, Space, Modal } from "antd";
 import AddProjectModal from "./AddProjectModal";
 import NiceModal from "@ebay/nice-modal-react";
+import { specialtyMap } from "./constants";
 
 const { Divider } = StatisticCard;
 
 const ProjectManage = () => {
+  const [data, setData] = useState([
+    {
+      id: 1,
+      title: "测试项目1",
+      specialty: 1,
+      line: ["K100-K200"],
+      totalCount: 100,
+      labelCount: 100,
+      annotatedCount: 50,
+      unannotatedCount: 50,
+    },
+    {
+      id: 2,
+      title: "测试项目2",
+      specialty: 2,
+      line: ["K100-K200"],
+      totalCount: 100,
+      labelCount: 100,
+      annotatedCount: 50,
+      unannotatedCount: 50,
+    },
+    {
+      id: 3,
+      title: "测试项目3",
+      specialty: 3,
+      line: ["K100-K200"],
+      totalCount: 100,
+      labelCount: 100,
+      annotatedCount: 50,
+      unannotatedCount: 50,
+    },
+  ]);
+
   const handleDelete = (id) => {
     Modal.confirm({
       title: "确认删除该项目吗？",
@@ -22,22 +56,29 @@ const ProjectManage = () => {
     });
   };
 
-  const data = useMemo(
+  const dataSource = useMemo(
     () =>
-      new Array(10).fill({}).map(() => ({
-        title: "项目名称",
+      data.map((item) => ({
+        title: item.title,
         subTitle: (
           <Space>
-            <Tag color="#FF9900">工务</Tag>
-            <Tag color="#5BD8A6">K100-K200</Tag>
+            <Tag color={specialtyMap[item.specialty]?.color} variant="outlined">
+              {specialtyMap[item.specialty]?.label}
+            </Tag>
+            {item.line?.map?.((line) => (
+              <Tag color="#5BD8A6" key={line} variant="outlined">
+                {line}
+              </Tag>
+            ))}
           </Space>
         ),
         actions: [
-          <a style={{ color: "#ff4d4f" }} onClick={handleDelete}>
+          <a style={{ color: "#ff4d4f" }} onClick={() => handleDelete(item.id)}>
             删除
           </a>,
           <AddProjectModal
             isEdit
+            initialValues={item}
             trigger={<a style={{ color: "#1677ff" }}>编辑</a>}
           />,
         ],
@@ -48,7 +89,7 @@ const ProjectManage = () => {
             <StatisticCard
               statistic={{
                 title: "总数量",
-                value: 100,
+                value: item.totalCount,
                 status: "processing",
               }}
             />
@@ -56,28 +97,28 @@ const ProjectManage = () => {
             <StatisticCard
               statistic={{
                 title: "标签数",
-                value: 100,
+                value: item.labelCount,
                 status: "default",
               }}
             />
             <StatisticCard
               statistic={{
                 title: "已标注",
-                value: 100,
+                value: item.annotatedCount,
                 status: "success",
               }}
             />
             <StatisticCard
               statistic={{
                 title: "未标注",
-                value: 100,
+                value: item.unannotatedCount,
                 status: "error",
               }}
             />
           </StatisticCard.Group>
         ),
       })),
-    [],
+    [data],
   );
 
   return (
@@ -165,7 +206,7 @@ const ProjectManage = () => {
               },
             },
           }}
-          dataSource={data}
+          dataSource={dataSource}
         />
       </PageContainer>
     </NiceModal.Provider>
