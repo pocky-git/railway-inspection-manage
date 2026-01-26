@@ -1,7 +1,7 @@
 import { Space, Popconfirm } from "antd";
 import AddMarkModal from "./AddMarkModal";
 
-export const getColumns = ({ handleDeleteTenant, handleStartMark, reload }) => {
+export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
   return [
     {
       title: "数据集名称",
@@ -25,7 +25,7 @@ export const getColumns = ({ handleDeleteTenant, handleStartMark, reload }) => {
         <Space>
           <a
             style={{ color: "#ff4d4f" }}
-            onClick={() => handleDeleteTenant(record.id)}
+            onClick={() => handleDeleteMark(record.id)}
           >
             删除
           </a>
