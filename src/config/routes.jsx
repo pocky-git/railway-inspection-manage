@@ -10,11 +10,10 @@ import {
 import { Outlet } from "react-router-dom";
 
 const ProjectManage = lazy(() => import("../pages/ProjectManage"));
-const DiseaseMark = lazy(() => import("../pages/DiseaseMark"));
+const DiseaseMarkList = lazy(() => import("../pages/DiseaseMark/List"));
+const DiseaseMarkMark = lazy(() => import("../pages/DiseaseMark/Mark"));
 const ModelTraining = lazy(() => import("../pages/ModelTraining"));
-const DefectAnalysisOverview = lazy(
-  () => import("../pages/DefectAnalysis/Overview"),
-);
+const DefectAnalysisList = lazy(() => import("../pages/DefectAnalysis/List"));
 const DefectAnalysisDashboard = lazy(
   () => import("../pages/DefectAnalysis/Dashboard"),
 );
@@ -35,11 +34,19 @@ export const routes = [
     name: "项目管理",
   },
   {
-    key: "/disease-mark",
-    path: "/disease-mark",
-    component: <DiseaseMark />,
+    key: "/disease-mark/list",
+    path: "/disease-mark/list",
+    component: <DiseaseMarkList />,
     icon: <EditOutlined />,
     name: "病害标注",
+  },
+  {
+    key: "/disease-mark/mark/:id",
+    path: "/disease-mark/mark/:id",
+    component: <DiseaseMarkMark />,
+    icon: <EditOutlined />,
+    name: "病害标注标注页",
+    hideInMenu: true,
   },
   {
     key: "/model-training",
@@ -49,9 +56,9 @@ export const routes = [
     name: "模型训练",
   },
   {
-    key: "/defect-analysis/overview",
-    path: "/defect-analysis/overview",
-    component: <DefectAnalysisOverview />,
+    key: "/defect-analysis/list",
+    path: "/defect-analysis/list",
+    component: <DefectAnalysisList />,
     icon: <BugOutlined />,
     name: "缺陷（病害）分析",
   },

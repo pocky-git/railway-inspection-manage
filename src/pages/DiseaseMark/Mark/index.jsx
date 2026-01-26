@@ -12,7 +12,12 @@ import {
   Slider,
   Popconfirm,
 } from "antd";
-import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  UndoOutlined,
+  RedoOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
 import SelectProjectModal from "./SelectProjectModal";
 import { SHAPE_TYPE } from "./constants";
@@ -589,9 +594,7 @@ const DiseaseMark = () => {
 
     // 构建标注数据
     const annotationData = {
-      imageUrl,
       imageId: currentImage.id,
-      imageName: currentImage.name,
       annotations: currentAnnotations.map((anno) => {
         // 统一处理所有标注类型，使用points数组计算边界框和相对坐标
         return {
@@ -614,14 +617,6 @@ const DiseaseMark = () => {
           })),
         };
       }),
-      timestamp: new Date().toISOString(),
-      totalAnnotations: currentAnnotations.length,
-      rectangleCount: currentAnnotations.filter(
-        (a) => a.shape === SHAPE_TYPE.RECTANGLE,
-      ).length,
-      polygonCount: currentAnnotations.filter(
-        (a) => a.shape === SHAPE_TYPE.POLYGON,
-      ).length,
     };
 
     // 这里可以替换为实际的保存逻辑，比如发送到后端API
@@ -722,6 +717,7 @@ const DiseaseMark = () => {
     }
   };
 
+  // 标注方法切换时处理
   const handleAnnotationMethodChange = (value) => {
     // TODO 需要换成请求api获取annotions
     let newAnnotations = [];
@@ -861,6 +857,16 @@ const DiseaseMark = () => {
     setRedoStack([]);
   };
 
+  // 删除单张图片
+  const handleDeleteImage = (id) => {
+    // TODO 调用api删除图片
+  };
+
+  // 删除所有图片
+  const handleDeleteAllImage = () => {
+    // TODO 调用api删除图片
+  };
+
   // 图片加载完成后设置Canvas尺寸
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -992,14 +998,18 @@ const DiseaseMark = () => {
           options={[
             { label: "手动标注", value: 1 },
             { label: "YOLO自动检测", value: 2 },
-            { label: "SAM智能分割", value: 3 },
-            { label: "MMSeg语义分割", value: 4 },
           ]}
           value={annotationMethod}
           onChange={handleAnnotationMethodChange}
         />
         <div className={styles.headerRight}>
           <Space size={18}>
+            <Popconfirm
+              title="确认清除所有图片吗？"
+              onConfirm={handleDeleteAllImage}
+            >
+              <a style={{ color: "#ff4d4f" }}>清除图片</a>
+            </Popconfirm>
             <Upload>
               <a style={{ color: "#1677ff" }}>本地上传</a>
             </Upload>
@@ -1041,6 +1051,17 @@ const DiseaseMark = () => {
                       : "#ff4d4f",
                   }}
                 />
+                <div
+                  className={styles.deleteBtn}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Popconfirm
+                    title="确认删除吗？"
+                    onConfirm={() => handleDeleteImage(item.id)}
+                  >
+                    <DeleteOutlined />
+                  </Popconfirm>
+                </div>
               </div>
             ))}
           </div>

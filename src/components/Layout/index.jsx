@@ -71,7 +71,7 @@ const AdminLayout = ({ children }) => {
         )}
         // layout="mix"
         contentStyle={
-          location.pathname === "/disease-mark"
+          location.pathname?.includes?.("/disease-mark/mark/")
             ? {
                 padding: 0,
               }
