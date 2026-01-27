@@ -98,7 +98,7 @@ const UserManagement = observer(() => {
         }}
         toolBarRender={() => [
           <AddUserModal
-            onFinish={() => actionRef.current?.reload?.()}
+            onFinish={handleReload}
             trigger={
               <Button key="button" icon={<PlusOutlined />} type="primary">
                 添加用户

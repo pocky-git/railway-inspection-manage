@@ -17,28 +17,28 @@ const ModelTraining = observer(() => {
       data: [
         {
           id: 1,
-          modelName: "工务模型",
+          modelName: "裂缝识别模型",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 1,
         },
         {
           id: 2,
-          modelName: "电务模型",
+          modelName: "剥落识别模型",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 2,
         },
         {
           id: 3,
-          modelName: "供电模型",
+          modelName: "变形识别模型",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 3,
         },
         {
           id: 4,
-          modelName: "供电模型",
+          modelName: "锈蚀识别模型",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 4,
@@ -58,13 +58,20 @@ const ModelTraining = observer(() => {
       onOk: () => {
         // 这里应该调用实际的API，现在模拟删除
         message.success("模型已删除");
-        actionRef.current?.reload?.();
+        handleReload();
       },
     });
   };
 
+  const handleReload = () => {
+    actionRef.current?.reload?.();
+  };
+
   // 获取模型训练列表列配置
-  const columns = getColumns({ handleDeleteModelTraining });
+  const columns = getColumns({
+    handleDeleteModelTraining,
+    reload: handleReload,
+  });
 
   return (
     <PageContainer
@@ -110,7 +117,7 @@ const ModelTraining = observer(() => {
                 新建模型
               </Button>
             }
-            onFinish={() => actionRef.current?.reload?.()}
+            onFinish={handleReload}
           />,
         ]}
       />

@@ -1,4 +1,8 @@
-import { ModalForm, ProFormText } from "@ant-design/pro-components";
+import {
+  ModalForm,
+  ProFormText,
+  ProFormSelect,
+} from "@ant-design/pro-components";
 import { Form, message } from "antd";
 
 const AddMarkModal = ({ onFinish, trigger, isEdit, initialValues }) => {
@@ -36,6 +40,30 @@ const AddMarkModal = ({ onFinish, trigger, isEdit, initialValues }) => {
         label="数据集名称"
         rules={[{ required: true, message: "请输入数据集名称" }]}
       />
+      {!isEdit && (
+        <ProFormSelect
+          name="name"
+          label="选择项目"
+          rules={[{ required: true, message: "请选择项目" }]}
+          params={{ page: 1, pageSize: 999 }}
+          request={async (params) => {
+            return [
+              {
+                label: "测试项目1",
+                value: "testProject1",
+              },
+              {
+                label: "测试项目2",
+                value: "testProject2",
+              },
+              {
+                label: "测试项目3",
+                value: "testProject3",
+              },
+            ];
+          }}
+        />
+      )}
     </ModalForm>
   );
 };

@@ -4,7 +4,7 @@ import AddTenantModal from "./AddTenantModal";
 export const getColumns = ({ handleDeleteTenant, reload }) => {
   return [
     {
-      title: "租户名称",
+      title: "路局名称",
       dataIndex: "name",
       key: "name",
       width: 600,

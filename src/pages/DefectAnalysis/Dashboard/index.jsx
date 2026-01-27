@@ -87,7 +87,7 @@ const DefectAnalysisDashboard = () => {
         breadcrumb: {
           items: [
             {
-              path: "/defect-analysis/overview",
+              path: "/defect-analysis/list",
               title: "缺陷（病害）分析",
             },
             {
@@ -98,9 +98,6 @@ const DefectAnalysisDashboard = () => {
       }}
       extra={<Button type="primary">导出报表</Button>}
     >
-      <QueryFilter>
-        <ProFormDateRangePicker name="dateRange" label="时间范围" />
-      </QueryFilter>
       <ProCard gutter={[8, 8]} ghost wrap>
         <ProCard
           colSpan={8}
@@ -159,7 +156,7 @@ const DefectAnalysisDashboard = () => {
         >
           <Bar {...defectTypeBarConfig} />
         </ProCard>
-        <ProCard
+        {/* <ProCard
           colSpan={24}
           layout="center"
           variant="outlined"
@@ -167,7 +164,7 @@ const DefectAnalysisDashboard = () => {
           className={styles.hotCard}
         >
           <RiskHeatMap />
-        </ProCard>
+        </ProCard> */}
       </ProCard>
     </PageContainer>
   );

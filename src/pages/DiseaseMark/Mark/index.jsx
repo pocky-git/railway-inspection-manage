@@ -7,19 +7,11 @@ import {
   Badge,
   Button,
   Tooltip,
-  Upload,
-  Space,
   Slider,
   Popconfirm,
 } from "antd";
-import {
-  SaveOutlined,
-  UndoOutlined,
-  RedoOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
-import SelectProjectModal from "./SelectProjectModal";
 import { SHAPE_TYPE } from "./constants";
 import styles from "./index.module.less";
 import img from "./a.jpg";
@@ -862,11 +854,6 @@ const DiseaseMark = () => {
     // TODO 调用api删除图片
   };
 
-  // 删除所有图片
-  const handleDeleteAllImage = () => {
-    // TODO 调用api删除图片
-  };
-
   // 图片加载完成后设置Canvas尺寸
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1002,23 +989,6 @@ const DiseaseMark = () => {
           value={annotationMethod}
           onChange={handleAnnotationMethodChange}
         />
-        <div className={styles.headerRight}>
-          <Space size={18}>
-            <Popconfirm
-              title="确认清除所有图片吗？"
-              onConfirm={handleDeleteAllImage}
-            >
-              <a style={{ color: "#ff4d4f" }}>清除图片</a>
-            </Popconfirm>
-            <Upload>
-              <a style={{ color: "#1677ff" }}>本地上传</a>
-            </Upload>
-            <SelectProjectModal
-              onFinish={() => {}}
-              trigger={<a style={{ color: "#1677ff" }}>导入项目</a>}
-            />
-          </Space>
-        </div>
       </div>
       <div className={styles.content}>
         <div className={styles.sidebar}>
@@ -1051,17 +1021,6 @@ const DiseaseMark = () => {
                       : "#ff4d4f",
                   }}
                 />
-                <div
-                  className={styles.deleteBtn}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Popconfirm
-                    title="确认删除吗？"
-                    onConfirm={() => handleDeleteImage(item.id)}
-                  >
-                    <DeleteOutlined />
-                  </Popconfirm>
-                </div>
               </div>
             ))}
           </div>

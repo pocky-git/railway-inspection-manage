@@ -65,25 +65,19 @@ const AddAnalysisModal = ({ onFinish, trigger, initialValues }) => {
         request={async (params) => {
           return [
             {
-              label: "工务模型",
+              label: "裂缝识别模型",
               value: 1,
             },
             {
-              label: "电务模型",
+              label: "剥落识别模型",
               value: 2,
             },
             {
-              label: "供电模型",
+              label: "变形识别模型",
               value: 3,
             },
           ];
         }}
-      />
-      <ProFormDateRangePicker
-        width="100%"
-        name="dateRange"
-        label="时间范围"
-        rules={[{ required: true, message: "请选择时间范围" }]}
       />
     </ModalForm>
   );

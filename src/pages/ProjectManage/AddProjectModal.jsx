@@ -31,37 +31,25 @@ const AddProjectModal = ({ trigger, initialValues, isEdit, onFinish }) => {
         rules={[{ required: true, message: "请输入项目名称" }]}
       />
       {!isEdit && (
-        <>
-          <ProFormSelect
-            name="specialty"
-            label="选择专业"
-            rules={[{ required: true, message: "请选择专业" }]}
-            options={[
-              { label: "工务", value: 1 },
-              { label: "电务", value: 2 },
-              { label: "供电", value: 3 },
-            ]}
-          />
-          <ProFormSelect
-            name="line"
-            label="选择线路"
-            rules={[{ required: true, message: "请选择线路" }]}
-            params={{ page: 1, pageSize: 999 }}
-            mode="multiple"
-            request={async (params) => {
-              return [
-                {
-                  label: "K100-K200",
-                  value: "K100-K200",
-                },
-                {
-                  label: "K200-K300",
-                  value: "K200-K300",
-                },
-              ];
-            }}
-          />
-        </>
+        <ProFormSelect
+          name="directory"
+          label="选择目录"
+          rules={[{ required: true, message: "请选择目录" }]}
+          params={{ page: 1, pageSize: 999 }}
+          mode="multiple"
+          request={async (params) => {
+            return [
+              {
+                label: "隧道1",
+                value: 1,
+              },
+              {
+                label: "隧道2",
+                value: 2,
+              },
+            ];
+          }}
+        />
       )}
     </ModalForm>
   );

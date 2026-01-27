@@ -7,7 +7,7 @@ const AddTenantModal = ({ onFinish, trigger, isEdit, initialValues }) => {
 
   return (
     <ModalForm
-      title={isEdit ? "编辑租户" : "添加租户"}
+      title={isEdit ? "编辑路局" : "添加路局"}
       trigger={trigger}
       form={form}
       autoFocusFirstInput
@@ -34,8 +34,8 @@ const AddTenantModal = ({ onFinish, trigger, isEdit, initialValues }) => {
     >
       <ProFormText
         name="name"
-        label="租户名称"
-        rules={[{ required: true, message: "请输入租户名称" }]}
+        label="路局名称"
+        rules={[{ required: true, message: "请输入路局名称" }]}
       />
     </ModalForm>
   );

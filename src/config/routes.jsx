@@ -70,13 +70,13 @@ export const routes = [
     name: "缺陷（病害）分析仪表盘",
     hideInMenu: true,
   },
-  {
-    key: "/line-manage",
-    path: "/line-manage",
-    component: <LineManagement />,
-    icon: <BranchesOutlined />,
-    name: "线路管理",
-  },
+  // {
+  //   key: "/line-manage",
+  //   path: "/line-manage",
+  //   component: <LineManagement />,
+  //   icon: <BranchesOutlined />,
+  //   name: "线路管理",
+  // },
   {
     key: "/permission-manage",
     path: "/permission-manage",
@@ -88,7 +88,7 @@ export const routes = [
         key: "/permission-manage/tenant-manage",
         path: "/permission-manage/tenant-manage",
         component: <TenantManagement />,
-        name: "租户管理",
+        name: "路局管理",
       },
       {
         key: "/permission-manage/user-manage",

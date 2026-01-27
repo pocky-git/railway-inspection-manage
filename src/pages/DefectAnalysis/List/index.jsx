@@ -14,7 +14,7 @@ const DefectAnalysisOverview = observer(() => {
   const getMockData = async () => [
     {
       name: "测试项目1",
-      modelName: "工务模型",
+      modelName: "裂缝识别模型",
       timeRange: [dayjs().add(-7, "d"), dayjs()],
       createdAt: dayjs(),
       id: 1,
@@ -22,7 +22,7 @@ const DefectAnalysisOverview = observer(() => {
     },
     {
       name: "测试项目2",
-      modelName: "电务模型",
+      modelName: "剥落识别模型",
       timeRange: [dayjs().add(-7, "d"), dayjs()],
       createdAt: dayjs(),
       id: 2,
@@ -30,7 +30,7 @@ const DefectAnalysisOverview = observer(() => {
     },
     {
       name: "测试项目3",
-      modelName: "供电模型",
+      modelName: "变形识别模型",
       timeRange: [dayjs().add(-7, "d"), dayjs()],
       createdAt: dayjs(),
       id: 3,

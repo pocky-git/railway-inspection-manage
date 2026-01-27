@@ -7,7 +7,6 @@ import {
 import { Button, Tag, Space, Modal } from "antd";
 import AddProjectModal from "./AddProjectModal";
 import NiceModal from "@ebay/nice-modal-react";
-import { specialtyMap } from "./constants";
 
 const { Divider } = StatisticCard;
 
@@ -17,7 +16,7 @@ const ProjectManage = () => {
       id: 1,
       title: "测试项目1",
       specialty: 1,
-      line: ["K100-K200"],
+      directoryName: "隧道1",
       totalCount: 100,
       labelCount: 100,
       annotatedCount: 50,
@@ -27,17 +26,7 @@ const ProjectManage = () => {
       id: 2,
       title: "测试项目2",
       specialty: 2,
-      line: ["K100-K200"],
-      totalCount: 100,
-      labelCount: 100,
-      annotatedCount: 50,
-      unannotatedCount: 50,
-    },
-    {
-      id: 3,
-      title: "测试项目3",
-      specialty: 3,
-      line: ["K100-K200"],
+      directoryName: "隧道2",
       totalCount: 100,
       labelCount: 100,
       annotatedCount: 50,
@@ -62,14 +51,9 @@ const ProjectManage = () => {
         title: item.title,
         subTitle: (
           <Space>
-            <Tag color={specialtyMap[item.specialty]?.color} variant="outlined">
-              {specialtyMap[item.specialty]?.label}
+            <Tag color="blue" variant="outlined">
+              {item.directoryName}
             </Tag>
-            {item.line?.map?.((line) => (
-              <Tag color="#5BD8A6" key={line} variant="outlined">
-                {line}
-              </Tag>
-            ))}
           </Space>
         ),
         actions: [
@@ -176,34 +160,6 @@ const ProjectManage = () => {
             },
             actions: {
               cardActionProps: "extra",
-            },
-            specialty: {
-              title: "专业",
-              valueEnum: {
-                1: "工务",
-                2: "电务",
-                3: "供电",
-              },
-            },
-            line: {
-              title: "线路",
-              valueType: "select",
-              fieldProps: {
-                showSearch: true,
-                mode: "multiple",
-              },
-              request: async () => {
-                return [
-                  {
-                    label: "K100-K200",
-                    value: "K100-K200",
-                  },
-                  {
-                    label: "K200-K300",
-                    value: "K200-K300",
-                  },
-                ];
-              },
             },
           }}
           dataSource={dataSource}

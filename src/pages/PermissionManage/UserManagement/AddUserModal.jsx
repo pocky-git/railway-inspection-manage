@@ -87,35 +87,6 @@ const AddUserModal = ({ onFinish, trigger, isEdit, initialValues }) => {
         rules={[{ required: true, message: "请输入手机号" }]}
       />
       <ProFormSelect
-        name="specialty"
-        label="专业"
-        rules={[{ required: true, message: "请选择专业" }]}
-        options={[
-          { label: "工务", value: "workforce" },
-          { label: "电务", value: "electrical" },
-          { label: "供电", value: "power" },
-        ]}
-      />
-      <ProFormSelect
-        name="line_ids"
-        label="负责线路"
-        rules={[{ required: true, message: "请选择负责线路" }]}
-        mode="multiple"
-        params={{ page: 1, pageSize: 999 }}
-        request={async (params) => {
-          return [
-            {
-              label: "K100-K200",
-              value: "K100-K200",
-            },
-            {
-              label: "K200-K300",
-              value: "K200-K300",
-            },
-          ];
-        }}
-      />
-      <ProFormSelect
         name="role_id"
         label="角色"
         rules={[{ required: true, message: "请选择角色" }]}
@@ -126,8 +97,8 @@ const AddUserModal = ({ onFinish, trigger, isEdit, initialValues }) => {
       />
       <ProFormSelect
         name="tenant_id"
-        label="所属租户"
-        rules={[{ required: true, message: "请选择所属租户" }]}
+        label="所属路局"
+        rules={[{ required: true, message: "请选择所属路局" }]}
         params={{ page: 1, pageSize: 999 }}
         request={async (params) => {
           return [

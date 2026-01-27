@@ -16,11 +16,13 @@ const DiseaseMarkList = observer(() => {
       {
         id: 1,
         name: "数据集1",
+        projectName: "测试项目1",
         createAt: "2026-01-01",
       },
       {
         id: 2,
         name: "数据集2",
+        projectName: "测试项目2",
         createAt: "2026-01-01",
       },
     ];
@@ -97,7 +99,7 @@ const DiseaseMarkList = observer(() => {
                 添加数据集
               </Button>
             }
-            onFinish={() => actionRef.current?.reload?.()}
+            onFinish={handleReload}
           />,
         ]}
       />

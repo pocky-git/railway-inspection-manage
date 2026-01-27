@@ -6,7 +6,12 @@ import {
   ProFormCheckbox,
 } from "@ant-design/pro-components";
 
-const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
+const AddModelTrainingModal = ({
+  trigger,
+  initialValues,
+  onFinish,
+  readonly,
+}) => {
   const [form] = Form.useForm();
 
   // 提交表单
@@ -16,7 +21,7 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
 
   return (
     <ModalForm
-      title="配置参数"
+      title={readonly ? "查看参数" : "配置参数"}
       trigger={trigger}
       form={form}
       autoFocusFirstInput
@@ -26,6 +31,7 @@ const AddModelTrainingModal = ({ trigger, initialValues, onFinish }) => {
         width: 500,
       }}
       onFinish={handleFinish}
+      readonly={readonly}
     >
       <ProFormSelect
         name="dataset"

@@ -26,45 +26,6 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
       search: false,
     },
     {
-      title: "专业",
-      dataIndex: "specialty",
-      key: "specialty",
-      valueType: "select",
-      valueEnum: {
-        workforce: {
-          text: "工务",
-        },
-        electrical: {
-          text: "电务",
-        },
-        power: {
-          text: "供电",
-        },
-      },
-    },
-    {
-      title: "负责线路",
-      dataIndex: "line_labels",
-      key: "line_labels",
-      valueType: "select",
-      fieldProps: {
-        showSearch: true,
-        mode: "multiple",
-      },
-      request: async () => {
-        return [
-          {
-            label: "K100-K200",
-            value: "K100-K200",
-          },
-          {
-            label: "K200-K300",
-            value: "K200-K300",
-          },
-        ];
-      },
-    },
-    {
       title: "角色",
       dataIndex: "role_id",
       key: "role_id",
@@ -79,7 +40,7 @@ export const getColumns = ({ handleDeleteUser, reload }) => {
       },
     },
     {
-      title: "所属租户",
+      title: "所属路局",
       dataIndex: "tenant_name",
       key: "tenant_id",
       render: (tenant_name) => tenant_name || "-",

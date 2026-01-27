@@ -13,16 +13,16 @@ const TenantManagement = observer(() => {
     return [
       {
         id: 1,
-        name: "租户1",
+        name: "路局1",
         createAt: "2026-01-01",
       },
     ];
   };
 
-  // 删除租户
+  // 删除路局
   const handleDeleteTenant = async (id) => {
     Modal.confirm({
-      title: "确认删除该租户吗？",
+      title: "确认删除该路局吗？",
       okText: "确认",
       okType: "danger",
       onOk: async () => {
@@ -43,12 +43,12 @@ const TenantManagement = observer(() => {
   return (
     <PageContainer
       header={{
-        title: "租户管理",
+        title: "路局管理",
         ghost: true,
         breadcrumb: {
           items: [
             {
-              title: "租户管理",
+              title: "路局管理",
             },
             {
               title: "列表",
@@ -81,10 +81,10 @@ const TenantManagement = observer(() => {
           <AddTenantModal
             trigger={
               <Button type="primary" icon={<PlusOutlined />}>
-                添加租户
+                添加路局
               </Button>
             }
-            onFinish={() => actionRef.current?.reload?.()}
+            onFinish={handleReload}
           />,
         ]}
       />

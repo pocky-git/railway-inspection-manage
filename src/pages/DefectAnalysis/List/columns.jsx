@@ -1,4 +1,4 @@
-import { Space } from "antd";
+import { Space, Tooltip } from "antd";
 
 export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
   return [
@@ -39,26 +39,19 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
       request: async () => {
         return [
           {
-            label: "工务模型",
+            label: "裂缝识别模型",
             value: 1,
           },
           {
-            label: "电务模型",
+            label: "剥落识别模型",
             value: 2,
           },
           {
-            label: "供电模型",
+            label: "变形识别模型",
             value: 3,
           },
         ];
       },
-      width: 200,
-    },
-    {
-      title: "时间范围",
-      dataIndex: "timeRange",
-      key: "timeRange",
-      valueType: "dateRange",
       width: 200,
     },
     {
@@ -69,7 +62,10 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
       valueEnum: {
         1: { text: "分析完成", status: "Success" },
         2: { text: "分析中", status: "Processing" },
-        3: { text: "分析失败", status: "Error" },
+        3: {
+          text: <Tooltip title="失败原因：分析失败">分析失败</Tooltip>,
+          status: "Error",
+        },
       },
       width: 200,
     },

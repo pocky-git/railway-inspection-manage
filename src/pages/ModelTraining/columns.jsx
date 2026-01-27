@@ -2,7 +2,7 @@ import { Space, Tooltip } from "antd";
 import AddProjectModal from "./AddModelModal";
 import TrainingModal from "./TrainingModal";
 
-export const getColumns = ({ handleDeleteModelTraining }) => {
+export const getColumns = ({ handleDeleteModelTraining, reload }) => {
   return [
     {
       title: "模型名称",
@@ -74,15 +74,20 @@ export const getColumns = ({ handleDeleteModelTraining }) => {
               </a>
             }
           />
-          {[3, 4].includes(record.status) && (
-            <TrainingModal
-              trigger={
-                <a style={{ color: "#1677ff" }} type="link">
-                  {record.status === 4 ? "开始训练" : "重新开始"}
-                </a>
-              }
-            />
-          )}
+          <TrainingModal
+            trigger={
+              <a style={{ color: "#1677ff" }} type="link">
+                {record.status === 4
+                  ? "开始训练"
+                  : record.status === 3
+                    ? "重新开始"
+                    : "查看参数"}
+              </a>
+            }
+            onFinish={reload}
+            initialValues={record}
+            readonly={[1, 2].includes(record.status)}
+          />
         </Space>
       ),
     },
