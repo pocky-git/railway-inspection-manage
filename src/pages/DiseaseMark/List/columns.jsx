@@ -36,6 +36,14 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
       width: 400,
     },
     {
+      title: "标注进度",
+      dataIndex: "progress",
+      key: "progress",
+      render: () => "1 / 2",
+      search: false,
+      width: 400,
+    },
+    {
       title: "创建时间",
       dataIndex: "createAt",
       key: "createAt",
