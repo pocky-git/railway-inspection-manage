@@ -7,7 +7,7 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
       title: "数据集名称",
       dataIndex: "name",
       key: "name",
-      width: 400,
+      width: 300,
     },
     {
       title: "项目名称",
@@ -33,7 +33,7 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
           },
         ];
       },
-      width: 400,
+      width: 300,
     },
     {
       title: "标注进度",
@@ -41,14 +41,14 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
       key: "progress",
       render: () => "1 / 2",
       search: false,
-      width: 400,
+      width: 300,
     },
     {
       title: "创建时间",
       dataIndex: "createAt",
       key: "createAt",
       search: false,
-      width: 400,
+      width: 300,
     },
     {
       title: "操作",
