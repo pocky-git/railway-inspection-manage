@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Input,
   message,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   Slider,
   Popconfirm,
+  Spin,
 } from "antd";
 import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
@@ -18,7 +19,7 @@ import styles from "./index.module.less";
 
 const mockImageList = new Array(50).fill(0).map((_, index) => ({
   id: index + 1,
-  thumbUrl: "http://121.33.195.138:88/compress/test/bridge/2222.JPG?w=100",
+  thumbUrl: "http://121.33.195.138:88/compress/test/bridge/2222.JPG?w=200",
   url: "http://121.33.195.138:19000/test/bridge/2222.JPG",
   name: `图片${index + 1}`,
 }));
@@ -51,11 +52,15 @@ const DiseaseMark = () => {
   const [redoStack, setRedoStack] = useState([]); // 复原栈
   const [annotationMethod, setAnnotationMethod] = useState(1);
   const [imageVirtualListHeight, setImageVirtualListHeight] = useState(0);
-
-  const completeAnnotationCount = useMemo(
-    () => Object.keys(annotations).length,
-    [annotations],
-  );
+  const [loadingData, setLoadingData] = useState({
+    spinning: false,
+  });
+  // Canvas尺寸状态
+  const [canvasSize, setCanvasSize] = useState({
+    width: 800,
+    height: 600,
+  });
+  const devicePixelRatio = window.devicePixelRatio || 1;
 
   // 引用
   const canvasRef = useRef(null);
@@ -85,13 +90,6 @@ const DiseaseMark = () => {
       wait: 10, // 50ms节流时间，比之前的100ms更短
     },
   );
-
-  // Canvas尺寸状态
-  const [canvasSize, setCanvasSize] = useState({
-    width: 800,
-    height: 600,
-  });
-  const devicePixelRatio = window.devicePixelRatio || 1;
 
   // 病害类型数据
   const diseaseTypes = [
@@ -174,9 +172,6 @@ const DiseaseMark = () => {
 
     // 更新拖拽起始位置
     setDragStart({ x, y });
-
-    // 重新绘制
-    drawAnnotations();
   };
 
   // 鼠标释放事件 - 结束拖拽
@@ -865,65 +860,63 @@ const DiseaseMark = () => {
     const container = canvasContainerRef.current;
     const img = imageRef.current;
 
-    if (canvas && container && img) {
-      img.addEventListener("load", () => {
-        // 设置Canvas尺寸为容器尺寸
-        const rect = container.getBoundingClientRect();
-        const newSize = {
-          width: Math.max(800, rect.width), // 减去padding
-          height: Math.max(600, rect.height),
-        };
-
-        setCanvasSize(newSize);
-        setImageWidth(img.width);
-        setImageHeight(img.height);
-
-        // 计算适合的初始缩放比例，确保图片能完整显示在Canvas中
-        const containerWidth = newSize.width;
-        const containerHeight = newSize.height;
-        const imgWidth = img.width;
-        const imgHeight = img.height;
-
-        // 计算宽高缩放比例
-        const scaleX = containerWidth / imgWidth;
-        const scaleY = containerHeight / imgHeight;
-
-        // 使用较小的缩放比例，确保图片完整显示
-        const initialScale = Math.min(scaleX, scaleY) * 100;
-
-        // 如果图片比容器小，则保持100%缩放
-        setZoom(Math.min(initialScale, 100));
-
-        // 设置Canvas高清显示
-        setupHighDpiCanvas(canvas, newSize.width, newSize.height);
-
-        drawAnnotations();
+    const handleImageLoad = () => {
+      setLoadingData({
+        spinning: false,
       });
-    }
-  }, [imageUrl]);
+      // 设置Canvas尺寸为容器尺寸
+      const rect = container.getBoundingClientRect();
+      const newSize = {
+        width: Math.max(800, rect.width), // 减去padding
+        height: Math.max(600, rect.height),
+      };
 
-  // 窗口大小变化时更新Canvas尺寸
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      const container = canvasContainerRef.current;
-      if (canvas && container) {
-        const rect = container.getBoundingClientRect();
-        const newSize = {
-          width: Math.max(800, rect.width),
-          height: Math.max(600, rect.height),
-        };
+      setCanvasSize(newSize);
+      setImageWidth(img.width);
+      setImageHeight(img.height);
 
-        setCanvasSize(newSize);
-        setupHighDpiCanvas(canvas, newSize.width, newSize.height);
+      // 计算适合的初始缩放比例，确保图片能完整显示在Canvas中
+      const containerWidth = newSize.width;
+      const containerHeight = newSize.height;
+      const imgWidth = img.width;
+      const imgHeight = img.height;
 
-        drawAnnotations();
-      }
+      // 计算宽高缩放比例
+      const scaleX = containerWidth / imgWidth;
+      const scaleY = containerHeight / imgHeight;
+
+      // 使用较小的缩放比例，确保图片完整显示
+      const initialScale = Math.min(scaleX, scaleY) * 100;
+
+      // 如果图片比容器小，则保持100%缩放
+      setZoom(Math.min(initialScale, 100));
+
+      // 设置Canvas高清显示
+      setupHighDpiCanvas(canvas, newSize.width, newSize.height);
+
+      drawAnnotations();
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [drawAnnotations]);
+    const handleImageError = () => {
+      message.error("图片加载失败");
+      setLoadingData({
+        spinning: false,
+      });
+    };
+
+    if (canvas && container && img) {
+      setLoadingData({
+        spinning: true,
+        tip: "图片加载中...",
+      });
+      img.addEventListener("load", handleImageLoad);
+      img.addEventListener("error", handleImageError);
+    }
+    return () => {
+      img.removeEventListener("load", handleImageLoad);
+      img.removeEventListener("error", handleImageError);
+    };
+  }, [imageUrl]);
 
   // 缩放变化时重新绘制
   useEffect(() => {
@@ -935,266 +928,259 @@ const DiseaseMark = () => {
     }
   }, [
     zoom,
-    imageWidth,
-    imageHeight,
     currentAnnotations,
     currentAnnotation,
     isDrawing,
     imageOffset,
+    imageWidth,
+    imageHeight,
   ]);
 
-  // 标注变化时重新绘制
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      // 确保Canvas高清显示
-      setupHighDpiCanvas(canvas, canvasSize.width, canvasSize.height);
-      drawAnnotations();
-    }
-  }, [currentAnnotation, isDrawing, currentAnnotations, imageUrl, imageOffset]);
-
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.annotationType}>
-            <Tooltip placement="bottom" title="矩形标注">
-              <div
-                className={`iconfont icon-rectangle ${
-                  annotationType === SHAPE_TYPE.RECTANGLE ? "active" : ""
-                }`}
-                onClick={() => setAnnotationType(SHAPE_TYPE.RECTANGLE)}
-              />
-            </Tooltip>
-            <Tooltip placement="bottom" title="多边形标注">
-              <div
-                className={`iconfont icon-polygon ${
-                  annotationType === SHAPE_TYPE.POLYGON ? "active" : ""
-                }`}
-                onClick={() => setAnnotationType(SHAPE_TYPE.POLYGON)}
-              />
-            </Tooltip>
-          </div>
-          <div className={styles.line} />
-          <div className={styles.redoAndUndo}>
-            <Tooltip placement="bottom" title="撤销">
-              <UndoOutlined className={styles.icon} onClick={handleUndo} />
-            </Tooltip>
-            <Tooltip placement="bottom" title="复原">
-              <RedoOutlined className={styles.icon} onClick={handleRedo} />
-            </Tooltip>
-          </div>
-        </div>
-        <Tag.CheckableTagGroup
-          className={styles.annotationMethod}
-          options={[
-            { label: "手动标注", value: 1 },
-            { label: "YOLO自动检测", value: 2 },
-          ]}
-          value={annotationMethod}
-          onChange={handleAnnotationMethodChange}
-        />
-      </div>
-      <div className={styles.content}>
-        <div className={styles.sidebar}>
-          <div className={styles.progress}>
-            进度：{completeAnnotationCount} / {imageList.length}
-          </div>
-          <div className={styles.imageList}>
-            <div ref={imageListRef} className={styles.imageListInner}>
-              <VirtualList
-                height={imageVirtualListHeight}
-                itemHeight={86}
-                itemKey="id"
-                data={imageList}
-              >
-                {(item, index) => {
-                  return (
-                    <div
-                      key={item.id}
-                      className={styles.imageItem}
-                      style={{
-                        border:
-                          index === currentImageIndex
-                            ? "2px solid #1677ff"
-                            : "2px solid transparent",
-                      }}
-                      onClick={() => handleImageChange(index)}
-                    >
-                      <img
-                        className={styles.imageThumb}
-                        src={item.thumbUrl}
-                        alt={item.name}
-                      />
-                      <div
-                        className={styles.imageStatus}
-                        style={{
-                          backgroundColor: annotations[item.id]
-                            ? "#52c41a"
-                            : "#ff4d4f",
-                        }}
-                      />
-                    </div>
-                  );
-                }}
-              </VirtualList>
+    <Spin {...loadingData}>
+      <div className={styles.wrapper}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <div className={styles.annotationType}>
+              <Tooltip placement="bottom" title="矩形标注">
+                <div
+                  className={`iconfont icon-rectangle ${
+                    annotationType === SHAPE_TYPE.RECTANGLE ? "active" : ""
+                  }`}
+                  onClick={() => setAnnotationType(SHAPE_TYPE.RECTANGLE)}
+                />
+              </Tooltip>
+              <Tooltip placement="bottom" title="多边形标注">
+                <div
+                  className={`iconfont icon-polygon ${
+                    annotationType === SHAPE_TYPE.POLYGON ? "active" : ""
+                  }`}
+                  onClick={() => setAnnotationType(SHAPE_TYPE.POLYGON)}
+                />
+              </Tooltip>
+            </div>
+            <div className={styles.line} />
+            <div className={styles.redoAndUndo}>
+              <Tooltip placement="bottom" title="撤销">
+                <UndoOutlined className={styles.icon} onClick={handleUndo} />
+              </Tooltip>
+              <Tooltip placement="bottom" title="复原">
+                <RedoOutlined className={styles.icon} onClick={handleRedo} />
+              </Tooltip>
             </div>
           </div>
+          <Tag.CheckableTagGroup
+            className={styles.annotationMethod}
+            options={[
+              { label: "手动标注", value: 1 },
+              { label: "YOLO自动检测", value: 2 },
+            ]}
+            value={annotationMethod}
+            onChange={handleAnnotationMethodChange}
+          />
         </div>
-        <div className={styles.main}>
-          <div ref={canvasContainerRef} className={styles.canvasContainer}>
-            {/* 隐藏的图片元素，用于获取图片尺寸 */}
-            <img
-              ref={imageRef}
-              src={imageUrl}
-              alt="标注图片"
-              style={{ display: "none" }}
-            />
-            {/* 用于绘制的Canvas */}
-            <canvas
-              ref={canvasRef}
-              style={{
-                cursor: "crosshair",
-                display: "block",
-              }}
-              onMouseDown={(e) => {
-                handleMouseDown(e);
-                handleMouseDownForDrag(e);
-              }}
-              onMouseMove={(e) => {
-                handleMouseMove(e);
-                handleMouseMoveForDrag(e);
-              }}
-              onMouseUp={(e) => {
-                handleMouseUp(e);
-                handleMouseUpForDrag(e);
-              }}
-              onMouseLeave={(e) => {
-                handleMouseUp(e);
-                handleMouseUpForDrag(e);
-              }}
-              onDoubleClick={handleDoubleClick}
-              onWheel={(e) => {
-                e.preventDefault();
-                // 使用节流后的缩放函数
-                throttledZoom(e.deltaY);
-              }}
-            />
-          </div>
-        </div>
-        <div className={styles.rightbar}>
-          <div className={styles.paramItem}>
-            <div className={styles.paramLabel}>病害类型</div>
-            {diseaseTypes.map((item) => (
-              <Tag
-                className={styles.diseaseType}
-                variant={diseaseType === item.value ? "solid" : "outlined"}
-                color={item.color}
-                onClick={() => setDiseaseType(item.value)}
-              >
-                {item.label}
-              </Tag>
-            ))}
-          </div>
-          <div className={styles.paramItem}>
-            <div className={styles.paramLabel}>置信度</div>
-            <Slider
-              className={styles.slider}
-              defaultValue={85}
-              tooltip={{ open: true, formatter: (value) => `${value}%` }}
-              marks={{
-                0: <span className={styles.sliderLabel}>0%</span>,
-                100: <span className={styles.sliderLabel}>100%</span>,
-              }}
-            />
-          </div>
-          <div className={styles.paramItem}>
-            <div className={styles.paramLabel}>标注备注</div>
-            <Input.TextArea
-              className={styles.textarea}
-              placeholder="输入病害详细描述、位置信息等..."
-              value={diseaseRemark}
-              onChange={(e) => setDiseaseRemark(e.target.value)}
-              maxLength={500}
-            />
-          </div>
-          <div className={`${styles.paramItem} ${styles.markList}`}>
-            <div className={styles.paramLabel}>
-              标注列表
-              <Popconfirm title="确认清空所有标注吗？" onConfirm={handleClear}>
-                <a
-                  style={{ color: "#ff4d4f" }}
-                  className={styles.markListItemDeleteBtn}
+        <div className={styles.content}>
+          <div className={styles.sidebar}>
+            <div className={styles.progress}>进度：0 / 50</div>
+            <div className={styles.imageList}>
+              <div ref={imageListRef} className={styles.imageListInner}>
+                <VirtualList
+                  height={imageVirtualListHeight}
+                  itemHeight={86}
+                  itemKey="id"
+                  data={imageList}
                 >
-                  清空
-                </a>
-              </Popconfirm>
-            </div>
-            <div className={styles.markListWrapper}>
-              {!!currentAnnotations?.length && (
-                <List
-                  dataSource={currentAnnotations}
-                  renderItem={(item, index) => {
-                    const typeInfo =
-                      diseaseTypes.find((t) => t.value === item.type) ||
-                      diseaseTypes[diseaseTypes.length - 1];
+                  {(item, index) => {
                     return (
-                      <List.Item
+                      <div
                         key={item.id}
-                        actions={[
-                          <Popconfirm
-                            title="确认删除该标注吗？"
-                            onConfirm={() => handleDeleteAnnotation(item.id)}
-                          >
-                            <a
-                              style={{ color: "#ff4d4f" }}
-                              className={styles.markListItemDeleteBtn}
-                            >
-                              删除
-                            </a>
-                          </Popconfirm>,
-                        ]}
+                        className={styles.imageItem}
+                        style={{
+                          border:
+                            index === currentImageIndex
+                              ? "2px solid #1677ff"
+                              : "2px solid transparent",
+                        }}
+                        onClick={() => handleImageChange(index)}
                       >
-                        <List.Item.Meta
-                          title={
-                            <Badge
-                              color={typeInfo.color}
-                              text={`标注 ${index + 1}`}
-                              style={{ color: "#fff" }}
-                            />
-                          }
-                          description={
-                            <div className={styles.markListItemDesc}>
-                              <div>病害类型: {typeInfo.label}</div>
-                              <div>标注备注: {item.name}</div>
-                              <div>
-                                创建时间:{" "}
-                                {new Date(item.createdAt).toLocaleString()}
-                              </div>
-                            </div>
-                          }
+                        <img
+                          className={styles.imageThumb}
+                          src={item.thumbUrl}
+                          alt={item.name}
                         />
-                      </List.Item>
+                        <div
+                          className={styles.imageStatus}
+                          style={{
+                            backgroundColor: annotations[item.id]
+                              ? "#52c41a"
+                              : "#ff4d4f",
+                          }}
+                        />
+                      </div>
                     );
                   }}
-                />
-              )}
+                </VirtualList>
+              </div>
+            </div>
+          </div>
+          <div className={styles.main}>
+            <div ref={canvasContainerRef} className={styles.canvasContainer}>
+              {/* 隐藏的图片元素，用于获取图片尺寸 */}
+              <img
+                ref={imageRef}
+                src={imageUrl}
+                alt="标注图片"
+                style={{ display: "none" }}
+              />
+              {/* 用于绘制的Canvas */}
+              <canvas
+                ref={canvasRef}
+                style={{
+                  cursor: "crosshair",
+                  display: "block",
+                }}
+                onMouseDown={(e) => {
+                  handleMouseDown(e);
+                  handleMouseDownForDrag(e);
+                }}
+                onMouseMove={(e) => {
+                  handleMouseMove(e);
+                  handleMouseMoveForDrag(e);
+                }}
+                onMouseUp={(e) => {
+                  handleMouseUp(e);
+                  handleMouseUpForDrag(e);
+                }}
+                onMouseLeave={(e) => {
+                  handleMouseUp(e);
+                  handleMouseUpForDrag(e);
+                }}
+                onDoubleClick={handleDoubleClick}
+                onWheel={(e) => {
+                  e.preventDefault();
+                  // 使用节流后的缩放函数
+                  throttledZoom(e.deltaY);
+                }}
+              />
+            </div>
+          </div>
+          <div className={styles.rightbar}>
+            <div className={styles.paramItem}>
+              <div className={styles.paramLabel}>病害类型</div>
+              {diseaseTypes.map((item) => (
+                <Tag
+                  className={styles.diseaseType}
+                  variant={diseaseType === item.value ? "solid" : "outlined"}
+                  color={item.color}
+                  onClick={() => setDiseaseType(item.value)}
+                >
+                  {item.label}
+                </Tag>
+              ))}
+            </div>
+            <div className={styles.paramItem}>
+              <div className={styles.paramLabel}>置信度</div>
+              <Slider
+                className={styles.slider}
+                defaultValue={85}
+                tooltip={{ open: true, formatter: (value) => `${value}%` }}
+                marks={{
+                  0: <span className={styles.sliderLabel}>0%</span>,
+                  100: <span className={styles.sliderLabel}>100%</span>,
+                }}
+              />
+            </div>
+            <div className={styles.paramItem}>
+              <div className={styles.paramLabel}>标注备注</div>
+              <Input.TextArea
+                className={styles.textarea}
+                placeholder="输入病害详细描述、位置信息等..."
+                value={diseaseRemark}
+                onChange={(e) => setDiseaseRemark(e.target.value)}
+                maxLength={500}
+              />
+            </div>
+            <div className={`${styles.paramItem} ${styles.markList}`}>
+              <div className={styles.paramLabel}>
+                标注列表
+                <Popconfirm
+                  title="确认清空所有标注吗？"
+                  onConfirm={handleClear}
+                >
+                  <a
+                    style={{ color: "#ff4d4f" }}
+                    className={styles.markListItemDeleteBtn}
+                  >
+                    清空
+                  </a>
+                </Popconfirm>
+              </div>
+              <div className={styles.markListWrapper}>
+                {!!currentAnnotations?.length && (
+                  <List
+                    dataSource={currentAnnotations}
+                    renderItem={(item, index) => {
+                      const typeInfo =
+                        diseaseTypes.find((t) => t.value === item.type) ||
+                        diseaseTypes[diseaseTypes.length - 1];
+                      return (
+                        <List.Item
+                          key={item.id}
+                          actions={[
+                            <Popconfirm
+                              title="确认删除该标注吗？"
+                              onConfirm={() => handleDeleteAnnotation(item.id)}
+                            >
+                              <a
+                                style={{ color: "#ff4d4f" }}
+                                className={styles.markListItemDeleteBtn}
+                              >
+                                删除
+                              </a>
+                            </Popconfirm>,
+                          ]}
+                        >
+                          <List.Item.Meta
+                            title={
+                              <Badge
+                                color={typeInfo.color}
+                                text={`标注 ${index + 1}`}
+                                style={{ color: "#fff" }}
+                              />
+                            }
+                            description={
+                              <div className={styles.markListItemDesc}>
+                                <div>病害类型: {typeInfo.label}</div>
+                                <div>标注备注: {item.name}</div>
+                                <div>
+                                  创建时间:{" "}
+                                  {new Date(item.createdAt).toLocaleString()}
+                                </div>
+                              </div>
+                            }
+                          />
+                        </List.Item>
+                      );
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
+        <div className={styles.footer}>
+          <Button
+            color="primary"
+            variant="solid"
+            icon={<SaveOutlined />}
+            onClick={handleSave}
+            style={{ marginLeft: 8 }}
+          >
+            保存标注
+          </Button>
+        </div>
       </div>
-      <div className={styles.footer}>
-        <Button
-          color="primary"
-          variant="solid"
-          icon={<SaveOutlined />}
-          onClick={handleSave}
-          style={{ marginLeft: 8 }}
-        >
-          保存标注
-        </Button>
-      </div>
-    </div>
+    </Spin>
   );
 };
 
