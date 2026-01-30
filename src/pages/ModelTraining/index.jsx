@@ -17,28 +17,28 @@ const ModelTraining = observer(() => {
       data: [
         {
           id: 1,
-          modelName: "裂缝识别模型",
+          modelName: "病害识别模型1",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 1,
         },
         {
           id: 2,
-          modelName: "剥落识别模型",
+          modelName: "病害识别模型2",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 2,
         },
         {
           id: 3,
-          modelName: "变形识别模型",
+          modelName: "病害识别模型3",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 3,
         },
         {
           id: 4,
-          modelName: "锈蚀识别模型",
+          modelName: "病害识别模型4",
           modelType: "YOLO",
           createdAt: dayjs(),
           status: 4,

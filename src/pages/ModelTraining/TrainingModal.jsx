@@ -37,9 +37,19 @@ const AddModelTrainingModal = ({
         name="dataset"
         label="数据集"
         rules={[{ required: true, message: "请选择数据集" }]}
+        mode="multiple"
         params={{ page: 1, pageSize: 999 }}
         request={async (params) => {
-          return [];
+          return [
+            {
+              value: 1,
+              label: "裂缝数据集",
+            },
+            {
+              value: 2,
+              label: "落石数据集",
+            },
+          ];
         }}
       />
 

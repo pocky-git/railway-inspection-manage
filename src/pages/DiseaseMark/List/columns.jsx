@@ -7,7 +7,7 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
       title: "数据集名称",
       dataIndex: "name",
       key: "name",
-      width: 300,
+      width: 200,
     },
     {
       title: "项目名称",
@@ -33,22 +33,47 @@ export const getColumns = ({ handleDeleteMark, handleStartMark, reload }) => {
           },
         ];
       },
-      width: 300,
+      width: 200,
     },
     {
-      title: "标注进度",
-      dataIndex: "progress",
-      key: "progress",
-      render: () => "1 / 2",
+      title: "病害类型",
+      dataIndex: "diseaseType",
+      key: "diseaseType",
+      width: 200,
+      valueType: "select",
+      fieldProps: {
+        showSearch: true,
+      },
+      request: async () => {
+        return [
+          {
+            label: "裂缝",
+            value: 1,
+          },
+          {
+            label: "落石",
+            value: 2,
+          },
+          {
+            label: "变形",
+            value: 3,
+          },
+        ];
+      },
+    },
+    {
+      title: "标注数量",
+      dataIndex: "markCount",
+      key: "markCount",
       search: false,
-      width: 300,
+      width: 200,
     },
     {
       title: "创建时间",
       dataIndex: "createAt",
       key: "createAt",
       search: false,
-      width: 300,
+      width: 200,
     },
     {
       title: "操作",

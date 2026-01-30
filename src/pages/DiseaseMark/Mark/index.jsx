@@ -12,15 +12,16 @@ import {
 } from "antd";
 import { SaveOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 import { useThrottleFn } from "ahooks";
+import VirtualList from "@rc-component/virtual-list";
 import { SHAPE_TYPE } from "./constants";
 import styles from "./index.module.less";
-import img from "./a.jpg";
-import img2 from "./c.jpg";
 
-const mockImageList = [
-  { id: 1, url: img, name: "图片1" },
-  { id: 2, url: img2, name: "图片2" },
-];
+const mockImageList = new Array(50).fill(0).map((_, index) => ({
+  id: index + 1,
+  thumbUrl: "http://121.33.195.138:88/compress/test/bridge/2222.JPG?w=100",
+  url: "http://121.33.195.138:19000/test/bridge/2222.JPG",
+  name: `图片${index + 1}`,
+}));
 
 const DiseaseMark = () => {
   // 状态管理
@@ -49,6 +50,7 @@ const DiseaseMark = () => {
   const [undoStack, setUndoStack] = useState([]); // 撤销栈
   const [redoStack, setRedoStack] = useState([]); // 复原栈
   const [annotationMethod, setAnnotationMethod] = useState(1);
+  const [imageVirtualListHeight, setImageVirtualListHeight] = useState(0);
 
   const completeAnnotationCount = useMemo(
     () => Object.keys(annotations).length,
@@ -59,6 +61,7 @@ const DiseaseMark = () => {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const canvasContainerRef = useRef(null);
+  const imageListRef = useRef(null);
 
   // 缩放功能
   const handleZoomIn = () => {
@@ -849,10 +852,12 @@ const DiseaseMark = () => {
     setRedoStack([]);
   };
 
-  // 删除单张图片
-  const handleDeleteImage = (id) => {
-    // TODO 调用api删除图片
-  };
+  // 设置虚拟列表的高度
+  useEffect(() => {
+    if (imageListRef.current) {
+      setImageVirtualListHeight(imageListRef.current.clientHeight);
+    }
+  }, [imageListRef]);
 
   // 图片加载完成后设置Canvas尺寸
   useEffect(() => {
@@ -996,33 +1001,44 @@ const DiseaseMark = () => {
             进度：{completeAnnotationCount} / {imageList.length}
           </div>
           <div className={styles.imageList}>
-            {imageList.map((item, index) => (
-              <div
-                key={item.id}
-                className={styles.imageItem}
-                style={{
-                  border:
-                    index === currentImageIndex
-                      ? "2px solid #1677ff"
-                      : "2px solid transparent",
-                }}
-                onClick={() => handleImageChange(index)}
+            <div ref={imageListRef} className={styles.imageListInner}>
+              <VirtualList
+                height={imageVirtualListHeight}
+                itemHeight={86}
+                itemKey="id"
+                data={imageList}
               >
-                <img
-                  className={styles.imageThumb}
-                  src={item.url}
-                  alt={item.name}
-                />
-                <div
-                  className={styles.imageStatus}
-                  style={{
-                    backgroundColor: annotations[item.id]
-                      ? "#52c41a"
-                      : "#ff4d4f",
-                  }}
-                />
-              </div>
-            ))}
+                {(item, index) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className={styles.imageItem}
+                      style={{
+                        border:
+                          index === currentImageIndex
+                            ? "2px solid #1677ff"
+                            : "2px solid transparent",
+                      }}
+                      onClick={() => handleImageChange(index)}
+                    >
+                      <img
+                        className={styles.imageThumb}
+                        src={item.thumbUrl}
+                        alt={item.name}
+                      />
+                      <div
+                        className={styles.imageStatus}
+                        style={{
+                          backgroundColor: annotations[item.id]
+                            ? "#52c41a"
+                            : "#ff4d4f",
+                        }}
+                      />
+                    </div>
+                  );
+                }}
+              </VirtualList>
+            </div>
           </div>
         </div>
         <div className={styles.main}>

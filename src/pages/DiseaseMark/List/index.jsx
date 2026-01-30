@@ -15,15 +15,19 @@ const DiseaseMarkList = observer(() => {
     return [
       {
         id: 1,
-        name: "数据集1",
+        name: "裂缝数据集",
         projectName: "测试项目1",
         createAt: "2026-01-01",
+        markCount: 150,
+        diseaseType: 1,
       },
       {
         id: 2,
-        name: "数据集2",
+        name: "落石数据集",
         projectName: "测试项目2",
         createAt: "2026-01-01",
+        markCount: 100,
+        diseaseType: 2,
       },
     ];
   };

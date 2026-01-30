@@ -13,6 +13,7 @@
     "@ant-design/charts": "^2.6.7",
     "@ant-design/pro-components": "^2.8.10",
     "@ebay/nice-modal-react": "^1.2.13",
+    "@rc-component/virtual-list": "^1.0.2",
     "ahooks": "^3.9.6",
     "antd": "^6.2.1",
     "axios": "^1.13.2",

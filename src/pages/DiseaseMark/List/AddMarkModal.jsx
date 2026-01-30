@@ -41,28 +41,52 @@ const AddMarkModal = ({ onFinish, trigger, isEdit, initialValues }) => {
         rules={[{ required: true, message: "请输入数据集名称" }]}
       />
       {!isEdit && (
-        <ProFormSelect
-          name="name"
-          label="选择项目"
-          rules={[{ required: true, message: "请选择项目" }]}
-          params={{ page: 1, pageSize: 999 }}
-          request={async (params) => {
-            return [
-              {
-                label: "测试项目1",
-                value: "testProject1",
-              },
-              {
-                label: "测试项目2",
-                value: "testProject2",
-              },
-              {
-                label: "测试项目3",
-                value: "testProject3",
-              },
-            ];
-          }}
-        />
+        <>
+          <ProFormSelect
+            name="diseaseType"
+            label="病害类型"
+            rules={[{ required: true, message: "请选择病害类型" }]}
+            params={{ page: 1, pageSize: 999 }}
+            request={async (params) => {
+              return [
+                {
+                  label: "裂缝",
+                  value: 1,
+                },
+                {
+                  label: "落石",
+                  value: 2,
+                },
+                {
+                  label: "变形",
+                  value: 3,
+                },
+              ];
+            }}
+          />
+          <ProFormSelect
+            name="name"
+            label="选择项目"
+            rules={[{ required: true, message: "请选择项目" }]}
+            params={{ page: 1, pageSize: 999 }}
+            request={async (params) => {
+              return [
+                {
+                  label: "测试项目1",
+                  value: "testProject1",
+                },
+                {
+                  label: "测试项目2",
+                  value: "testProject2",
+                },
+                {
+                  label: "测试项目3",
+                  value: "testProject3",
+                },
+              ];
+            }}
+          />
+        </>
       )}
     </ModalForm>
   );

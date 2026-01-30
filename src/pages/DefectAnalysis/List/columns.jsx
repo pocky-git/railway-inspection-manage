@@ -39,15 +39,15 @@ export const getColumns = ({ handleDeleteAnalysis, handleGoDashboard }) => {
       request: async () => {
         return [
           {
-            label: "裂缝识别模型",
+            label: "病害识别模型1",
             value: 1,
           },
           {
-            label: "剥落识别模型",
+            label: "病害识别模型2",
             value: 2,
           },
           {
-            label: "变形识别模型",
+            label: "病害识别模型3",
             value: 3,
           },
         ];
