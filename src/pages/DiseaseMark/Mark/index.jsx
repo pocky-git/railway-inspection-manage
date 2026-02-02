@@ -19,8 +19,10 @@ import styles from "./index.module.less";
 
 const mockImageList = new Array(50).fill(0).map((_, index) => ({
   id: index + 1,
-  thumbUrl: "http://121.33.195.138:88/compress/test/bridge/2222.JPG?w=200",
-  url: "http://121.33.195.138:19000/test/bridge/2222.JPG",
+  thumbUrl: "http://121.33.195.138:88/images/test/bridge/2222.JPG?w=200",
+  url:
+    "http://121.33.195.138:88/images/test/bridge/2222.JPG?q=20&t=" +
+    Math.random(),
   name: `图片${index + 1}`,
 }));
 
@@ -1079,18 +1081,6 @@ const DiseaseMark = () => {
               ))}
             </div>
             <div className={styles.paramItem}>
-              <div className={styles.paramLabel}>置信度</div>
-              <Slider
-                className={styles.slider}
-                defaultValue={85}
-                tooltip={{ open: true, formatter: (value) => `${value}%` }}
-                marks={{
-                  0: <span className={styles.sliderLabel}>0%</span>,
-                  100: <span className={styles.sliderLabel}>100%</span>,
-                }}
-              />
-            </div>
-            <div className={styles.paramItem}>
               <div className={styles.paramLabel}>标注备注</div>
               <Input.TextArea
                 className={styles.textarea}
@@ -1152,6 +1142,7 @@ const DiseaseMark = () => {
                               <div className={styles.markListItemDesc}>
                                 <div>病害类型: {typeInfo.label}</div>
                                 <div>标注备注: {item.name}</div>
+                                <div>置信度: 80%</div>
                                 <div>
                                   创建时间:{" "}
                                   {new Date(item.createdAt).toLocaleString()}
