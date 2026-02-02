@@ -103,11 +103,11 @@ const AddUserModal = ({ onFinish, trigger, isEdit, initialValues }) => {
         request={async (params) => {
           return [
             {
-              label: "广州铁路局",
+              label: "A路局",
               value: "guangzhou",
             },
             {
-              label: "成都铁路局",
+              label: "B路局",
               value: "chengdu",
             },
           ];
