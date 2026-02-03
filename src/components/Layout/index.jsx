@@ -43,7 +43,14 @@ const AdminLayout = ({ children }) => {
           routes,
         }}
         location={location}
-        appList={[]}
+        appList={[
+          {
+            icon: "http://121.33.195.138:19001/favicon-32x32.png",
+            title: "MinIO",
+            desc: "图片管理平台",
+            url: "http://121.33.195.138:19001",
+          },
+        ]}
         avatarProps={{
           src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
           size: "small",
